@@ -1,0 +1,99 @@
+* {
+    margin: 0 auto;
+    padding: 0;
+    /* background: #81D2C7 url(https://i.redd.it/c8g2lhamr0w11.png); */
+}
+
+.header-bar {
+    padding: 60px;
+    background: #81D2C7;
+    text-align: center;
+    color: #FFF;
+    font-size: 60px;
+
+}
+
+.canvas {
+    margin-top: 20px;
+    text-align: center;
+    width: 800px;
+    height: 600px;
+    border-color: black;
+    border: solid;
+}
+
+.howto-container {
+    width: 80%;
+    height: 200px;
+    margin: auto;
+    text-align: center;
+    padding: 10px;
+}
+
+#left {
+    width: 50%;
+    height: 200px;
+    float: left;
+}
+
+#right {
+    margin-left: 15%;
+    height: 200px;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-position: inside;
+    list-style-type: lower-alpha;
+}
+
+form {
+    float: left;
+    /*to clear the floats of inner elements,usefull if you wanna add a border or background image*/
+    width: 400px;
+}
+
+/* Set a style for all buttons */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+}
+
+label {
+    float: left;
+    width: 150px;
+    margin-bottom: 10px;
+    /*or whatever you want the spacing to be*/
+}
+
+input {
+    float: left;
+    width: 150px;
+    margin-bottom: 10px;
+    /*or whatever you want the spacing to be*/
+}
+
+/* Full-width input fields */
+input[type=text],
+input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
+
+/* Add a background color when the inputs get focus */
+input[type=text]:focus,
+input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}

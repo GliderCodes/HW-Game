@@ -20,6 +20,7 @@
     height: 600px;
     border-color: black;
     border: solid;
+    position: relative;
 }
 
 .howto-container {

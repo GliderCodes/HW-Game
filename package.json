@@ -2,7 +2,7 @@
   "name": "project",
   "version": "1.0.0",
   "description": "A game project for heriot watt",
-  "main": "app.js",
+  "main": "server/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,8 +17,12 @@
   },
   "homepage": "https://github.com/GliderCodes/HW-Game#readme",
   "dependencies": {
+    "ejs": "^2.7.1",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0"
+    "mongoose": "^5.7.4",
+    "nodemon": "^1.19.3",
+    "socket.io": "^2.3.0",
+    "template-colors-web": "^1.0.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.11.2"

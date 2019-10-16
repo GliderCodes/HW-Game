@@ -11,5 +11,6 @@ app.use('/client',express.static(__dirname + '/client'));
 http.listen(3000);
 console.log("Connected")
 
-
-
+io.sockets.on('connection',function(socket ) {
+    console.log('socket connection');
+});

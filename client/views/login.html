@@ -1,0 +1,68 @@
+<html>
+
+<head>
+    <title> Pixel Wars | Login </title>
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <!-- <div id="preloder">
+        <div class="loader"></div>
+    </div> -->
+
+    <div class="loginbox">
+
+
+        <img src="img/GoldenChest.png" class="avatar">
+        <h1>Login</h1>
+        <form method="POST">
+            <p>Username</p>
+            <input type="text" id="username" placeholder="Enter Username" required name="username"></input>
+            <p>Password</p>
+            <input type="password" id="password" placeholder="Enter Password" required name="password"></input>
+            <input formaction="/login" type="submit" id="signIn" value="Sign In"></input>
+            <input formaction="/register" type="submit" id="signUp" value="Sign Up"></input>
+        </form>
+
+
+    </div>
+
+
+</body>
+
+
+<!--====== Javascripts & Jquery ======-->
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<!-- <script src="js/main.js"></script> -->
+<script src="js/socket.js"></script>
+<!-- <script>
+    var socket = io();
+
+    // Sign in elements
+    var username = document.getElementById("username");
+    var signIn = document.getElementById('signIn');
+    var signUp = document.getElementById('signUp');
+    var password = document.getElementById('password');
+
+    signIn.onclick = function (e) {
+        e.preventDefault();
+        socket.emit('signIn', username.value, password.value)
+    }
+
+    signUp.onclick = function(e){
+        e.preventDefault();
+        socket.emit('signUp', username.value, password.value)
+    }
+    socket.on('loginResponse', function(data, msg) {
+        if (data.success && data.login) {
+            alert(msg)
+            window.location = "main.html"; // Redirecting to other page.
+        } else if (data.success == false) {
+            alert(msg)
+        }
+    })
+</script> -->
+
+</html>

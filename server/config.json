@@ -1,3 +1,4 @@
 {
-    "debug": true
+    "debug": true,
+    "port": 3000
 }

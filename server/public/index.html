@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+	<title>Pixel Wars by Dop4Squ4d</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Cloud 83 - hosting template ">
+	<meta name="keywords" content="cloud, hosting, creative, html">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Favicon -->
+	<link href="img/favicon.ico" rel="shortcut icon" />
+
+	<!-- Google Font -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,500,500i,600,600i,700,700i"
+		rel="stylesheet">
+
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/font-awesome.min.css" />
+	<link rel="stylesheet" href="css/flaticon.css" />
+	<link rel="stylesheet" href="css/owl.carousel.min.css" />
+	<link rel="stylesheet" href="css/animate.css" />
+	<link rel="stylesheet" href="css/style.css" />
+
+</head>
+
+<body>
+	<!-- Page Preloder -->
+	<div id="preloder">
+		<div class="loader"></div>
+	</div>
+
+	<!-- Header section -->
+	<header class="header-section">
+		<a href="./index.html" class="site-logo">Dop3Squ4d</a>
+		<div class="nav-switch">
+			<i class="fa fa-bars"></i>
+		</div>
+		<div class="nav-warp">
+			<div class="user-panel">
+				<a href="./login.html">Login</a> /
+				<a href="./login.html">Register</a>
+			</div>
+			<ul class="main-menu">
+				<li><a href="#">Home</a></li>
+			</ul>
+		</div>
+	</header>
+	<!-- Header section end -->
+
+
+	<!-- Hero section -->
+	<section class="hero-section set-bg" data-setbg="img/bg.jpg">
+		<div class="container h-100">
+			<div class="hero-content text-white">
+				<div class="row">
+					<div class="col-lg-6 pr-0">
+						<h2>Pixel Wars</h2>
+						<p>An adventure game where you fight each other to until you get the throne, completely
+							unfinished but hey!</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Hero section end -->
+
+	<div id="canvas-wrap">
+		<canvas id="ctx" width="800" height="600"></canvas>
+		<canvas id="ctx-ui" width="800" height="600"></canvas>
+		<div id="overlay"></div>
+	</div>
+
+	<!-- Features section -->
+	<section class="features-section spad">
+		<div class="container">
+			<div class="section-title">
+				<img src="./img/section-title-icon.png" alt="#">
+				<p>The best out there</p>
+				<h2>See our features</h2>
+			</div>
+			<div class="row">
+				<div class="col-lg-4 col-md-6 feature-item">
+					<div class="ft-icon">
+						<i class="flaticon-map"></i>
+					</div>
+					<h4>Be able to move your character</h4>
+					<p>Use WASD keys or use the arrow keys to control your player. Using the mouse to click
+						will do other interactions like shooting or enabling certain events.
+					</p>
+				</div>
+				<div class="col-lg-4 col-md-6 feature-item fi-center-top">
+					<div class="ft-icon">
+						<i class="flaticon-shield"></i>
+					</div>
+					<h4>Multiplayer PVP</h4>
+					<p>Fight other players and see who is the better one can killing and winning the throne! </p>
+				</div>
+				<div class="col-lg-4 col-md-6 feature-item">
+					<div class="ft-icon">
+						<i class="flaticon-coding"></i>
+					</div>
+					<h4>Only the beginning!</h4>
+					<p>It's a brand new game and we have a LOT LOT more to add, stay tuned!!! </p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Features section end -->
+
+
+
+	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">
+			<ul class="footer-menu">
+				<li><a href="">Home</a></li>
+			</ul>
+			<div class="copyright">
+				<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+				This game is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by the Dop3Sq4d.
+				<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+			</div>
+		</div>
+	</footer>
+	<!-- Footer top section end -->
+
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/circle-progress.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/socket.js"></script>
+	<!-- <script src="js/client.js"></script> -->
+	<script>
+		var socket = io();
+		socket.emit('message');
+	</script>
+
+</body>
+
+</html>

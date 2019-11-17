@@ -1,29 +1,49 @@
-// const Player = require("../../server/core/playerSchema");
-// const User = require('../../server/core/user');
-// var io = require('socket.io')
-var sock = io();
+// socket connect established
+var socket = io();
 
+// ------- keys for movements -------
+var movement = {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+}
 
-console.log("hello")
+// when key is pressed
+document.addEventListener('keydown', function (event) {
+    switch (event.keyCode) {
+        case 65: // A
+            movement.left = true;
+            break;
+        case 87: // W
+            movement.up = true;
+            break;
+        case 68: // D
+            movement.right = true;
+            break;
+        case 83: // S
+            movement.down = true;
+            break;
+    }
+});
+// when key is not pressed
+document.addEventListener('keyup', function (event) {
+    switch (event.keyCode) {
+        case 65: // A
+            movement.left = false;
+            break;
+        case 87: // W
+            movement.up = false;
+            break;
+        case 68: // D
+            movement.right = false;
+            break;
+        case 83: // S
+            movement.down = false;
+            break;
+    }
+});
 
-
-sock.emit('message');
-// const onFormSubmitted = (e) => {
-//     e.preventDefault();
-
-//     const signDiv = document.getElementById("signDiv");
-//     const btnSignin = document.getElementById("btnsignIn");
-//     const btnSignup = document.getElementById("btnsignUp");
-
-//     btnSignin.onclick = function(){
-// 		sock.emit('signIn',{username:username.value,password:password.value});
-//     }
-//     btnSignup.onclick = function() {
-//         sock.emit('signUp', {username:username.value,password:password.value});
-//     }
-
-
-// }
-// document.querySelector('#signin-form').addEventListener('submit', onFormSubmitted);
-
-console.log(user)
+socket.on('message', function (data) {
+    console.log(data);
+});

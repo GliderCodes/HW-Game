@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zxx">
+<script src="js/socket.js"></script>
 
 <head>
 	<title>Pixel Wars by Dop4Squ4d</title>
@@ -27,9 +28,9 @@
 
 <body>
 	<!-- Page Preloder -->
-	<div id="preloder">
+	<!-- <div id="preloder">
 		<div class="loader"></div>
-	</div>
+	</div> -->
 
 	<!-- Header section -->
 	<header class="header-section">
@@ -135,15 +136,16 @@
 
 
 	<!--====== Javascripts & Jquery ======-->
+
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/owl.carousel.min.js"></script>
 	<script src="js/circle-progress.min.js"></script>
 	<script src="js/main.js"></script>
-	<script src="js/socket.js"></script>
-	
-	<script>
+	<script src="js/client.js"></script>
 
+
+	<script>
 		// Welcome user check
 		var render_user = document.getElementById("user.name");
 		if (render_user) {

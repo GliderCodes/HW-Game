@@ -12,6 +12,8 @@ const bcrypt = require('bcrypt');
 const cons = require('consolidate');
 const pageRouter = require('./router/pages')
 
+
+
 // const variables important for assignments
 const config = require('./config.json');
 const client = path.resolve("../client")

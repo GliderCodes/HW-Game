@@ -1,5 +1,16 @@
 // necessary files...
-
+const express = require('express')
+const app = express();
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+const path = require('path');
+const morgan = require('morgan');
+const cons = require('consolidate');
+const pageRouter = require('./router/pages')
+const RedisStore = require("connect-redis")(session);
 
 
 

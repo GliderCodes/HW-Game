@@ -8,9 +8,9 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const path = require('path');
 const morgan = require('morgan');
-const bcrypt = require('bcrypt');
 const cons = require('consolidate');
 const pageRouter = require('./router/pages')
+const RedisStore = require("connect-redis")(session);
 
 
 
@@ -19,11 +19,10 @@ const config = require('./config.json');
 const client = path.resolve("../client")
 const port = config.port;
 const debug = config.debug;
-var USER_LIST = {}
 
 // mongoose configuration
-const Player = require("./core/playerSchema");
 const mongoose = require("mongoose");
+const Player = require('./core/playerSchema')
 
 // DB connection
 mongoose.connect('mongodb://localhost/my_database', {
@@ -44,17 +43,22 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.resolve(client)));
 
-// session
-app.use(session({
-    secret: 'user_sid',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        maxAge: 10 * 60 * 1000
-    }
-}))
+var sessionMiddleware =
+    session({
+        secret: 'user_sid',
+        resave: true,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            maxAge: 10 * 60 * 1000
+        }
+    })
+io.use(function (socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});
+// using session
+app.use(sessionMiddleware)
 
 // setting the express static and files for client
 app.engine('html', cons.swig)
@@ -64,18 +68,18 @@ app.set('view engine', 'html');
 // routers 
 app.use('/', pageRouter)
 
-// // Errors => page not found 404
-// app.use((req, res, next) =>  {
-//     var err = new Error('Page not found');
-//     err.status = 404;
-//     next(err);
-// })
+// Errors => page not found 404
+app.use((req, res, next) => {
+    var err = new Error('Page not found');
+    err.status = 404;
+    next(err);
+})
 
-// // Handling errors (send them to the client)
-// app.use((err, req, res, next) => {
-//     res.status(err.status || 500);
-//     res.send(err.message);
-// });
+// Handling errors (send them to the client)
+app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+    res.send(err.message);
+});
 
 // Setting up the server
 // app.listen(3001, () => {
@@ -92,82 +96,72 @@ server.listen(port, () => {
     console.log(`Listening at port ${port}...`);
 });
 
-
+function valueExists(jsObj, value, cb){
+    for (var key in jsObj){
+        if (jsObj[key].username == value) 
+        return cb(key, true);
+    }
+    return cb(key, false);
+}
 // socket connection for players/clients
-io.on("connection", function (socket) {
-
-    // For signing in
-    socket.on('signIn', function (username, password) {
-
-        Player.findOne({
-            name: username
-        }, async function (err, player) {
-            let hashedPassword = await bcrypt.compare(password, player.password);
-            if (err) {
-                socket.emit("loginResponse", {
-                    success: false,
-                    login: true,
-                    signup: false
-                }, err)
-            } else if (!player) {
-                socket.emit("loginResponse", {
-                    success: false,
-                    login: true,
-                    signup: false
-                }, "Username doesn't exist in database")
-            } else if (hashedPassword) {
-                socket.emit("loginResponse", {
-                    success: true,
-                    login: true,
-                    signup: false
-                }, `Welcome back ${username}`)
-            } else {
-                socket.emit("loginResponse", {
-                    success: false,
-                    login: true,
-                    signup: false
-                }, "Password is incorrect")
-            }
-        })
+var players = {};
+io.on('connection', function (socket) {
+    
+    // console.log(socket.id)
+    var playerdb = socket.request.session.user
+    // console.log(players)
+    if (playerdb)
+    valueExists(players, playerdb.username, function(key, exists) {
+        if (exists) {
+            // console.log(players[key])
+            delete players[key] 
+            players[socket.id] = {
+                username: playerdb.username,
+                x: playerdb.x,
+                y: playerdb.y
+            };
+            // console.log(players)
+        } else {
+            // console.log(exists)
+            players[socket.id] = {
+                username: playerdb.username,
+                x: playerdb.x,
+                y: playerdb.y
+            };
+        }
     })
+    console.log(players)
+        
+        // console.log(players.filter(function(player){
+        //     return player.socket.id !== playerdb.username
+        // }))
+        // console.log(players.hasOwnProperty(playerdb.username))
+        // console.log(players)
 
-    // For signing up
-    socket.on('signUp', async (username, password) => {
-        Player.findOne({
-            name: username
-        }, async function (err, player) {
-            if (err) {
-                console.log(err)
-                console.log("SignUp unsuccessful.")
-            } else if (!player) {
-                try {
-                    const hashedPassword = await bcrypt.hash(password, 10);
-                    const player = new Player({
-                        _id: new mongoose.Types.ObjectId(),
-                        name: username,
-                        password: hashedPassword,
-                        x: 10,
-                        y: 20,
-                        health: 100,
-                        score: 0,
-                        kills: 1
-                    });
-                    player.save().then(result => {
-                        socket.emit('signUp')
-                        console.log(result)
-                    }).catch(err => console.log(err));
-                } catch (err) {
-                    console.log(err)
-                }
-            } else {
-                console.log(player)
-                console.log("Username already exists.");
-            }
-        })
-    })
+    socket.on('disconnect', function () {
+        console.log("dissssssssssconnnnecccteddd")
+        if (players[socket.id] && players[socket.id].x != undefined && players[socket.id].y != undefined) {
+            Player.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
+        }
+        delete players[socket.id];
+    });
 
-
-    socket.on('message', function () {
-        console.log(socket.id)
-    })
-})
+    socket.on('movement', function (data) {
+        var player = players[socket.id];
+        if (data.left) {
+            player.x -= 5;
+        }
+        if (data.up) {
+            player.y -= 5;
+        }
+        if (data.right) {
+            player.x += 5;
+        }
+        if (data.down) {
+            player.y += 5;
+        }
+    });
+});
+setInterval(function () {
+    io.sockets.emit('state', players);
+}, 1000 / 60);

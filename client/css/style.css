@@ -84,11 +84,14 @@ ol {
 }
 
 #canvas-wrap {
+	background-image: url(../img/game/random.png);
+	width:960px;
+	height:720px;
 	text-align: center;
 	margin: 0 auto;
 	margin-top: 5%;
-	align-content: center;
-}a
+	align-content: right;
+}
 
 /*---------------------
   Helper CSS

@@ -90,6 +90,10 @@ ol {
 	align-content: center;
 }
 
+#canvas{
+	background-color: green;
+}
+
 
 /*---------------------
   Helper CSS

@@ -69,9 +69,9 @@
 	<!-- Hero section end -->
 
 
-	<!-- Canvas section end -->
+	<!-- Canvas section start -->
 	<div id="canvas-wrap">
-		<canvas id="canvas" width="640" height="360" style="border:1px solid #000000;"></canvas>
+		<canvas id="canvas" width="800" height="600" background-image= url(../img/game/random.png) style="border:1px solid #000000;"></canvas>
 		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
 		<div id="overlay"></div>
 	</div>
@@ -169,10 +169,10 @@ var CANVAS_HEIGHT = 360;
 var timeWhenGameStarted = Date.now();	//return time in ms
 
 let resizeCanvas = function(){
-  CANVAS_WIDTH = window.innerWidth - 4;
-  CANVAS_HEIGHT = window.innerHeight - 4;
+  CANVAS_WIDTH = window.innerWidth - 2;
+  CANVAS_HEIGHT = window.innerHeight - 2;
 
-  let ratio = 16 / 9;
+  let ratio = 4 / 3;
   if(CANVAS_HEIGHT < CANVAS_WIDTH / ratio)
     CANVAS_WIDTH = CANVAS_HEIGHT * ratio;
   else
@@ -351,6 +351,8 @@ Maps = function(id,imgSrc,grid){
 		var x = WIDTH/2 - player.x;
 		var y = HEIGHT/2 - player.y;
 		ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width*2,self.image.height*2);
+		//ctx.drawImage(self.image,0,0,self.image.width,self.image.height,     // source rectangle
+                  // 0, 0, self.image.width*2,self.image.height*2); 
 	}
 	return self;
 }

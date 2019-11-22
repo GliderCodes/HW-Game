@@ -137,7 +137,7 @@ io.on('connection', function (socket) {
         // console.log(players)
 
     socket.on('disconnect', function () {
-        console.log("dissssssssssconnnnecccteddd")
+        console.log("Disconnected")
         if (players[socket.id] && players[socket.id].x != undefined && players[socket.id].y != undefined) {
             Player.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
         }

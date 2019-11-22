@@ -1,3 +1,4 @@
+// Loading necessary modules with Node.js
 const express = require('express');
 const User = require('../core/user');
 const session = require('express-session');
@@ -5,14 +6,17 @@ const router = express.Router();
 const io = require('socket.io');
 
 
-// new user
+// Creating a new user object
 const user = new User()
+
 // Get the index page
 router.get('/', (req, res, next) => {
+
     let user = req.session.user;
-    // If there is a session named user that means the use is logged in. so we redirect him to home page by using /home route below
+
+    // If there is a session named user that means the user is logged in. So we redirect him to the home page by using /home route below
     if (user) {
-        // console.log(req.session)
+
         console.log(req.session.sid + " is logged in")
         res.render('index', {
             opp: req.session.opp,
@@ -24,16 +28,16 @@ router.get('/', (req, res, next) => {
         });
         return;
     }
+
     // if not we just send the login page.
     res.render('login')
 })
 
-// Get home page
+// Getting home page
 router.get('/index', (req, res, next) => {
     let user = req.session.user;
 
     if (user) {
-        // document.getElementById('user-panel').style.display = "none";
         res.render('index', {
             opp: req.session.opp,
             id: {
@@ -47,12 +51,11 @@ router.get('/index', (req, res, next) => {
     res.redirect('/');
 });
 
-// Get login page
+// Getting login page
 router.get('/login', (req, res, next) => {
     let user = req.session.user;
 
     if (user) {
-        // document.getElementById('user-panel').style.display = "none";
         res.render('index', {
             opp: req.session.opp,
             id: {
@@ -66,21 +69,26 @@ router.get('/login', (req, res, next) => {
     res.render('login');
 });
 
+
 // Post login data
 router.post('/login', (req, res, next) => {
+
     // The data sent from the user are stored in the req.body object.
-    // call our login function and it will return the result(the user data).
+    // Call our login function and it will return the result(the user data).
     user.login(req.body.username, req.body.password, function (result) {
         if (result) {
+
             // Store the user data in a session.
             var session = req.session;
             session.user = result;
             session.sid = req.cookies['connect.sid']
             session.opp = 1;
-            // redirect the user to the home page.
+
+            // Redirect the user to the home page.
             res.redirect('/');
         } else {
-            // if the login function returns null send this error message back to the user.
+
+            // If the login function returns null, send this error message back to the user.
             res.send('Username/Password incorrect!');
         }
     })
@@ -89,16 +97,20 @@ router.post('/login', (req, res, next) => {
 
 // Post register data
 router.post('/register', (req, res, next) => {
-    // prepare an object containing all user inputs.
+
+    // Create an object containing all user inputs.
     let userInput = {
         username: req.body.username,
         password: req.body.password
     };
-    // call create function. to create a new user. if there is no error this function will return it's id.
+
+    // Call a create function to create a new user. If there is no error, this function will return user's id.
     user.create(userInput, function (lastId) {
-        // if the creation of the user goes well we should get an integer (id of the inserted user)
+
+        // If the creation of the user goes well, we should get an integer (id of the inserted user)
         if (lastId) {
-            // Get the user data by it's id. and store it in a session.
+
+            // Get the user data by it's id and store it in a session.
             user.find(lastId, true, function (result) {
                 req.session.user = result;
                 req.session.valid = 0;

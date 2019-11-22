@@ -12,6 +12,8 @@ const cons = require('consolidate');
 const pageRouter = require('./router/pages')
 const RedisStore = require("connect-redis")(session);
 
+
+
 // const variables important for assignments
 const config = require('./config.json');
 const client = path.resolve("../client")

@@ -24,6 +24,19 @@
 	<link rel="stylesheet" href="css/animate.css" />
 	<link rel="stylesheet" href="css/style.css" />
 
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+    // Handler for .ready() called.
+    $('html, body').animate({
+        scrollTop: $('#canvas').offset().top
+    }, 'slow');
+});
+
+</script>
+
 </head>
 
 <body>

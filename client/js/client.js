@@ -2,7 +2,7 @@
 var socket = io();
 
 // ------- keys for movements -------
-var movement = {
+var playerMovement = {
     up: false,
     down: false,
     left: false,
@@ -13,16 +13,16 @@ var movement = {
 document.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
         case 65: // A
-            movement.left = true;
+        playerMovement.left = true;
             break;
         case 87: // W
-            movement.up = true;
+        playerMovement.up = true;
             break;
         case 68: // D
-            movement.right = true;
+        playerMovement.right = true;
             break;
         case 83: // S
-            movement.down = true;
+        playerMovement.down = true;
             break;
     }
 });
@@ -30,20 +30,47 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keyup', function (event) {
     switch (event.keyCode) {
         case 65: // A
-            movement.left = false;
+        playerMovement.left = false;
             break;
         case 87: // W
-            movement.up = false;
+        playerMovement.up = false;
             break;
         case 68: // D
-            movement.right = false;
+        playerMovement.right = false;
             break;
         case 83: // S
-            movement.down = false;
+        playerMovement.down = false;
             break;
     }
 });
 
-socket.on('message', function (data) {
-    console.log(data);
+// imgs for each stuff
+var Img = {};
+	Img.player = new Image();
+	Img.player.src = '../img/game/player.png';
+	Img.bullet = new Image();
+    Img.bullet.src = '../img/game/bullet.png';
+    
+
+setInterval(() => {
+    socket.emit('movement', playerMovement);
+  }, 1000 / 60);
+
+
+var canvas = document.getElementById('canvas');
+canvas.width = 800;
+canvas.height = 600;
+var context = canvas.getContext('2d');
+socket.on('state', function(players) {
+  context.clearRect(0, 0, 800, 600);
+  context.fillStyle = 'green';
+  for (var id in players) {
+    var player = players[id];
+    context.beginPath();
+    context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+    context.fill();
+  }
 });
+// socket.on('message', function (data) {
+//     console.log(data);
+// });

@@ -12,10 +12,14 @@ router.get('/', (req, res, next) => {
     let user = req.session.user;
     // If there is a session named user that means the use is logged in. so we redirect him to home page by using /home route below
     if (user) {
+        // console.log(req.session)
         console.log(req.session.sid + " is logged in")
         res.render('index', {
             opp: req.session.opp,
-            id: req.session.userid,
+            id: {
+                session: req.session.userid,
+                db: req.session.user._id
+            },
             name: user.username
         });
         return;
@@ -32,7 +36,10 @@ router.get('/index', (req, res, next) => {
         // document.getElementById('user-panel').style.display = "none";
         res.render('index', {
             opp: req.session.opp,
-            id: req.session.userid,
+            id: {
+                session: req.session.userid,
+                db: req.session.user._id
+            },
             name: user.username
         });
         return;
@@ -48,7 +55,10 @@ router.get('/login', (req, res, next) => {
         // document.getElementById('user-panel').style.display = "none";
         res.render('index', {
             opp: req.session.opp,
-            id: req.session.userid,
+            id: {
+                session: req.session.userid,
+                db: req.session.user._id
+            },
             name: user.username
         });
         return;

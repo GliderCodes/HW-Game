@@ -1,5 +1,7 @@
+// Create a mongoose module 
 const mongoose = require("mongoose");
 
+//Creating a player scheme object storing all database objects
 const playerSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     username: String,
@@ -11,4 +13,5 @@ const playerSchema = mongoose.Schema({
     kills: Number
 })
 
+// Calling exports function with the player object and id as arguments.
 module.exports = mongoose.model('Player', playerSchema);

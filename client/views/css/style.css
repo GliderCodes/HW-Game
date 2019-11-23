@@ -88,6 +88,13 @@ ol {
 	margin: 0 auto;
 	margin-top: 5%;
 	align-content: center;
+<<<<<<< HEAD
+=======
+}
+
+#canvas{
+	background-color: green;
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
 }
 
 

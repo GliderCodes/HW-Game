@@ -1,4 +1,4 @@
-// necessary files...
+// Loading necessary modules with Node.js
 const express = require('express')
 const app = express();
 const bodyParser = require('body-parser');
@@ -12,32 +12,38 @@ const cons = require('consolidate');
 const pageRouter = require('./router/pages')
 const RedisStore = require("connect-redis")(session);
 
-// const variables important for assignments
+
+
+// Constant variables important for assignments
 const config = require('./config.json');
 const client = path.resolve("../client")
 const port = config.port;
 const debug = config.debug;
 
+<<<<<<< HEAD
 // mongoose configuration
+=======
+// Mongoose database configuration
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
 const mongoose = require("mongoose");
 const Player = require('./core/playerSchema')
 
-// DB connection
+// Mongoose database connection
 mongoose.connect('mongodb://localhost/my_database', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
 
-// set morgan to log info about our requests for development use.
+// Setting morgan to load information about the requests for development/configuration uses.
 app.use(morgan('dev'));
 
-// initialize body-parser to parse incoming parameters requests to req.body
+// Initialize bodyParser to parse the incoming parameter requests to req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-// initialize cookie-parser to allow us access the cookies stored in the browser. 
+// Initialize cookieParser to allow us to access the cookies stored in the browser.
 app.use(cookieParser());
 app.use(express.static(path.resolve(client)));
 
@@ -55,18 +61,27 @@ var sessionMiddleware =
 io.use(function (socket, next) {
     sessionMiddleware(socket.request, socket.request.res, next);
 });
+<<<<<<< HEAD
 // using session
+=======
+
+// Using session
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
 app.use(sessionMiddleware)
 
-// setting the express static and files for client
+// Setting the express static and files for client
 app.engine('html', cons.swig)
 app.set('views', path.resolve("../client/views"))
 app.set('view engine', 'html');
 
-// routers 
+// Using routers 
 app.use('/', pageRouter)
 
+<<<<<<< HEAD
 // Errors => page not found 404
+=======
+// Errors object => page not found 404
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
 app.use((req, res, next) => {
     var err = new Error('Page not found');
     err.status = 404;
@@ -79,10 +94,6 @@ app.use((err, req, res, next) => {
     res.send(err.message);
 });
 
-// Setting up the server
-// app.listen(3001, () => {
-//     console.log('Server is running on port 3000...');
-// });
 
 // server events and listening
 server.on("error", (err) => {
@@ -101,6 +112,7 @@ function valueExists(jsObj, value, cb){
     }
     return cb(key, false);
 }
+<<<<<<< HEAD
 // socket connection for players/clients
 var players = {};
 io.on('connection', function (socket) {
@@ -112,15 +124,33 @@ io.on('connection', function (socket) {
     valueExists(players, playerdb.username, function(key, exists) {
         if (exists) {
             // console.log(players[key])
+=======
+
+// Socket connection for players/clients
+var players = {};
+io.on('connection', function (socket) {
+    
+    var playerdb = socket.request.session.user
+
+    if (playerdb)
+    valueExists(players, playerdb.username, function(key, exists) {
+        if (exists) {
+
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
             delete players[key] 
             players[socket.id] = {
                 username: playerdb.username,
                 x: playerdb.x,
                 y: playerdb.y
             };
+<<<<<<< HEAD
             // console.log(players)
         } else {
             // console.log(exists)
+=======
+
+        } else {
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
             players[socket.id] = {
                 username: playerdb.username,
                 x: playerdb.x,
@@ -129,6 +159,7 @@ io.on('connection', function (socket) {
         }
     })
     console.log(players)
+<<<<<<< HEAD
         
         // console.log(players.filter(function(player){
         //     return player.socket.id !== playerdb.username
@@ -138,12 +169,22 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
         console.log("dissssssssssconnnnecccteddd")
+=======
+
+    // Socket listener for when players disconnect
+    socket.on('disconnect', function () {
+        console.log("Disconnected")
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
         if (players[socket.id] && players[socket.id].x != undefined && players[socket.id].y != undefined) {
             Player.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
         }
         delete players[socket.id];
     });
 
+<<<<<<< HEAD
+=======
+    // Socket listener for when players move
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
     socket.on('movement', function (data) {
         var player = players[socket.id];
         if (data.left) {
@@ -160,6 +201,10 @@ io.on('connection', function (socket) {
         }
     });
 });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
 setInterval(function () {
     io.sockets.emit('state', players);
 }, 1000 / 60);

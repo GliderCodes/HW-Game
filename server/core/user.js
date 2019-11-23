@@ -84,7 +84,7 @@ User.prototype = {
             // If the username/password is wrong then return null.
             callback(null);
         });
-    }
+    }ad
 }
 
 module.exports = User;

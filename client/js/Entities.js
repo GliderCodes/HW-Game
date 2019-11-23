@@ -1,6 +1,7 @@
 
 var player;
 
+//Common object that holds attributes for player, bullets etc.
 Entity = function(type,id,x,y,width,height,img){
 	var self = {
 		type:type,
@@ -11,10 +12,15 @@ Entity = function(type,id,x,y,width,height,img){
 		height:height,
 		img:img,
 	};
+
+
 	self.update = function(){
 		self.updatePosition();
 		self.draw();
 	}
+
+
+	// Draws the canvas for player models
 	self.draw = function(){
 		ctx.save();
 		var x = self.x - player.x;
@@ -60,12 +66,14 @@ Entity = function(type,id,x,y,width,height,img){
 	return self;
 }
 
+//Player object created
 Player = function(){
 	var self = Actor('player','myId',50,40,50*1.5,70*1.5,Img.player,10,1);
 	self.maxMoveSpd = 10;
 	self.pressingMouseLeft = false;
 	self.pressingMouseRight = false;
 	
+	// Special attacks of player on mouse clicks
 	var super_update = self.update;
 	self.update = function(){
 		super_update();
@@ -77,19 +85,18 @@ Player = function(){
 			self.performSpecialAttack();
 	}	
 	
-	
+	//When player dies
 	self.onDeath = function(){
 		var timeSurvived = Date.now() - timeWhenGameStarted;		
 		console.log("You lost! You survived for " + timeSurvived + " ms.");		
 		startNewGame();
 	}
-	
-	
-	
+
 	return self;
 	
 }
 
+// Hero Object creation
 Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 	var self = Entity(type,id,x,y,width,height,img);
 	
@@ -107,6 +114,8 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 	self.pressingRight = false;
 	self.maxMoveSpd = 3;
 	
+
+	//Drawing Player with scrollable camera angle attributes
 	self.draw = function(){
 		ctx.save();
 		var x = self.x - player.x;
@@ -143,6 +152,8 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 		ctx.restore();
 	}
 	
+
+	//Changes position of player on movement keys and adding bump on edge or immovable game objects
 	self.updatePosition = function(){
 		var leftBumper = {x:self.x - 40,y:self.y};
 		var rightBumper = {x:self.x + 40,y:self.y};
@@ -175,7 +186,7 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 				self.y -= self.maxMoveSpd;
 		}
 		
-		//ispositionvalid
+		// Is the position valid
 		if(self.x < self.width/2)
 			self.x = self.width/2;
 		if(self.x > Maps.current.width-self.width/2)
@@ -196,6 +207,7 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 	}
 	self.onDeath = function(){};
 	
+	//Object for normal attack
 	self.performAttack = function(){
 		if(self.attackCounter > 25){	//every 1 sec
 			self.attackCounter = 0;
@@ -203,14 +215,10 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 		}
 	}
 	
+	//Object for special attack
 	self.performSpecialAttack = function(){
 		if(self.attackCounter > 50){	//every 1 sec
 			self.attackCounter = 0;
-			/*
-			for(var i = 0 ; i < 360; i++){
-				Bullet.generate(self,i);
-			}
-			*/
 			Bullet.generate(self,self.aimAngle - 5);
 			Bullet.generate(self,self.aimAngle);
 			Bullet.generate(self,self.aimAngle + 5);
@@ -223,6 +231,8 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 
 //#####
 
+
+//NPCS Object creation
 Enemy = function(id,x,y,width,height,img,hp,atkSpd){
 	var self = Actor('enemy',id,x,y,width,height,img,hp,atkSpd);
 	Enemy.list[id] = self;
@@ -237,12 +247,16 @@ Enemy = function(id,x,y,width,height,img,hp,atkSpd){
 		self.updateKeyPress();
 		self.performAttack();
 	}
+
+	//Aim towards player angle
 	self.updateAim = function(){
 		var diffX = player.x - self.x;
 		var diffY = player.y - self.y;
 		
 		self.aimAngle = Math.atan2(diffY,diffX) / Math.PI * 180
 	}
+
+	//Move according to actor movement.
 	self.updateKeyPress = function(){
 		var diffX = player.x - self.x;
 		var diffY = player.y - self.y;
@@ -282,6 +296,7 @@ Enemy = function(id,x,y,width,height,img,hp,atkSpd){
 
 Enemy.list = {};
 
+
 Enemy.update = function(){
 	if(frameCount % 100 === 0)	//every 4 sec
 		Enemy.randomlyGenerate();
@@ -294,6 +309,7 @@ Enemy.update = function(){
 	}
 }
 
+//Randomly generates enemy at different positions in map
 Enemy.randomlyGenerate = function(){
 	//Math.random() returns a number between 0 and 1
 	var x = Math.random()*Maps.current.width;
@@ -317,6 +333,7 @@ Upgrade = function (id,x,y,width,height,category,img){
 
 Upgrade.list = {};
 
+//Each time score updates as game run/
 Upgrade.update = function(){
 	if(frameCount % 75 === 0)	//every 3 sec
 		Upgrade.randomlyGenerate();
@@ -333,6 +350,7 @@ Upgrade.update = function(){
 	}
 }	
 
+//Function for generation of random objects throughout map
 Upgrade.randomlyGenerate = function(){
 	//Math.random() returns a number between 0 and 1
 	var x = Math.random()*Maps.current.width;
@@ -353,6 +371,8 @@ Upgrade.randomlyGenerate = function(){
 }
 
 //#####
+
+//Object creation for bullets(attacks).
 Bullet = function (id,x,y,spdX,spdY,width,height,combatType){
 	var self = Entity('bullet',id,x,y,width,height,Img.bullet);
 	
@@ -373,15 +393,15 @@ Bullet = function (id,x,y,spdX,spdY,width,height,combatType){
 		
 		if(self.combatType === 'player'){	//bullet was shot by player
 			for(var key2 in Enemy.list){
-				if(self.testCollision(Enemy.list[key2])){
+				if(self.testCollision(Enemy.list[key2])){  //If hits enemy
 					self.toRemove = true;
-					Enemy.list[key2].hp -= 1;
+					Enemy.list[key2].hp -= 1;  // Enemy loses 1 hp
 				}				
 			}
-		} else if(self.combatType === 'enemy'){
-			if(self.testCollision(player)){
+		} else if(self.combatType === 'enemy'){  //bullet was shot by enemy
+			if(self.testCollision(player)){  //If hits player
 				self.toRemove = true;
-				player.hp -= 1;
+				player.hp -= 1;  //Player loses 1 hp
 			}
 		}	
 		if(Maps.current.isPositionWall(self)){
@@ -389,6 +409,7 @@ Bullet = function (id,x,y,spdX,spdY,width,height,combatType){
 		}
 		
 	}
+	
 	
 	self.updatePosition = function(){
 		self.x += self.spdX;
@@ -419,8 +440,9 @@ Bullet.update = function(){
 	}
 }
 
+//Generation of bullets according to angle of player
+
 Bullet.generate = function(actor,aimOverwrite){
-	//Math.random() returns a number between 0 and 1
 	var x = actor.x;
 	var y = actor.y;
 	var height = 24;

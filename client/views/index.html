@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+
+<head>
+	<title>Pixel Wars by Dop4Squ4d</title>
+
+	<!-- Some data that that are not displayed on screen, but are machine parsable. -->
+	<meta charset="UTF-8">
+	<meta name="description" content="Cloud 83 - hosting template ">
+	<meta name="keywords" content="cloud, hosting, creative, html">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Favicon -->
+	<link href="img/favicon.ico" rel="shortcut icon" />
+
+	<!-- Google Font -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,500,500i,600,600i,700,700i"
+		rel="stylesheet">
+
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/font-awesome.min.css" />
+	<link rel="stylesheet" href="css/flaticon.css" />
+	<link rel="stylesheet" href="css/owl.carousel.min.css" />
+	<link rel="stylesheet" href="css/animate.css" />
+	<link rel="stylesheet" href="css/style.css" />
+
+	<!-- Some scripts -->
+	<script src="js/socket.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+
+$(document).ready(function () {
+    // Handler for .ready() called.
+    $('html, body').animate({
+        scrollTop: $('#canvas').offset().top
+    }, 'slow');
+});
+
+</script>
+
+</head>
+
+<body>
+	<!-- Page Preloder -->
+	
+	<!-- Header section -->
+	<header class="header-section">
+		<a href="./index.html" class="site-logo">Dop3Squ4d</a>
+		<div class="nav-switch">
+			<i class="fa fa-bars"></i>
+		</div>
+		<div class="nav-warp">
+			<div class="user-panel">
+				<a id="user-panel" href="./login.html">Login</a> /
+				<a id="user-panel2" href="./login.html">Register</a>
+			</div>
+			<ul class="main-menu">
+				<li><a href="#">Home</a></li>
+			</ul>
+		</div>
+	</header>
+	<!-- Header section end -->
+
+
+	<!-- Hero section -->
+	<section class="hero-section set-bg" data-setbg="img/bg.jpg">
+		<div class="container h-100">
+			<div class="hero-content text-white">
+				<div class="row">
+					<div class="col-lg-6 pr-0">
+						<span id="user.name" style="display: none">{{name}}</span>
+						<h2>Pixel Wars</h2>
+						<p>An adventure game where you fight each other to until you get the throne, completely
+							unfinished but hey!</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Hero section end -->
+
+
+	<!-- Canvas section start -->
+	<div id="canvas-wrap">
+		<canvas id="canvas" width="800" height="600" background-image= url(../img/game/random.png) style="border:1px solid #000000;"></canvas>
+		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
+		<div id="overlay"></div>
+	</div>
+	<script src="js/client.js"></script>
+	<!-- Canvas section end -->
+
+
+	<!-- Features section -->
+	<section class="features-section spad">
+		<div class="container">
+			<div class="section-title">
+				<img src="./img/section-title-icon.png" alt="#">
+				<p>The best out there</p>
+				<h2>See our features</h2>
+			</div>
+			<div class="row">
+				<div class="col-lg-4 col-md-6 feature-item">
+					<div class="ft-icon">
+						<i class="flaticon-map"></i>
+					</div>
+					<h4>Be able to move your character</h4>
+					<p>Use WASD keys or use the arrow keys to control your player. Using the mouse to click
+						will do other interactions like shooting or enabling certain events.
+					</p>
+				</div>
+				<div class="col-lg-4 col-md-6 feature-item fi-center-top">
+					<div class="ft-icon">
+						<i class="flaticon-shield"></i>
+					</div>
+					<h4>Multiplayer PVP</h4>
+					<p>Fight other players and see who is the better one can killing and winning the throne! </p>
+				</div>
+				<div class="col-lg-4 col-md-6 feature-item">
+					<div class="ft-icon">
+						<i class="flaticon-coding"></i>
+					</div>
+					<h4>Only the beginning!</h4>
+					<p>It's a brand new game and we have a LOT LOT more to add, stay tuned!!! </p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Features section end -->
+
+
+
+	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">
+			<ul class="footer-menu">
+				<li><a href="">Home</a></li>
+			</ul>
+			<div class="copyright">
+				<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+				This game is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by the Dop3Sq4d.
+				<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+			</div>
+		</div>
+	</footer>
+	<!-- Footer top section end -->
+
+
+	<!--====== Javascripts & Jquery ======-->
+
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/circle-progress.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/client.js"></script>
+	<script src="js/Entities.js"></script>
+
+
+	<script>
+		
+		// Welcome user check
+		var render_user = document.getElementById("user.name");
+		if (render_user) {
+			document.getElementById("user-panel").removeAttribute("href");
+			document.getElementById("user-panel2").removeAttribute("href");
+			document.getElementById("user-panel").innerHTML = "Welcome";
+			document.getElementById("user-panel2").innerHTML = render_user.innerText;
+		}
+
+
+		// socket connection established
+		var socket = io();
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		var TILE_SIZE = 32;
+		var WIDTH = 640;
+		var HEIGHT = 360;
+		var CANVAS_WIDTH = 640;
+		var CANVAS_HEIGHT = 360;
+		var timeWhenGameStarted = Date.now();	//return time in milliseconds
+
+
+		// Resizing canvas for game use
+		let resizeCanvas = function(){
+		CANVAS_WIDTH = window.innerWidth - 2;
+		CANVAS_HEIGHT = window.innerHeight - 2;
+
+		let ratio = 4 / 3;
+		if(CANVAS_HEIGHT < CANVAS_WIDTH / ratio)
+			CANVAS_WIDTH = CANVAS_HEIGHT * ratio;
+		else
+			CANVAS_HEIGHT = CANVAS_WIDTH / ratio;
+
+		canvas.width = WIDTH;
+		canvas.height = HEIGHT;
+		ctx.font = '30px Arial';
+		ctx.mozImageSmoothingEnabled = false;	//better graphics for pixel art
+		ctx.msImageSmoothingEnabled = false;
+		ctx.imageSmoothingEnabled = false;
+
+		canvas.style.width = '' + CANVAS_WIDTH + 'px';
+		canvas.style.height = '' + CANVAS_HEIGHT + 'px';
+		}
+		resizeCanvas();
+
+		window.addEventListener('resize',function(){
+		resizeCanvas();
+		});
+
+
+		var frameCount = 0;
+		var score = 0;
+		var paused = false;
+
+		//Creating game image objects
+		var Img = {};
+		Img.player = new Image();
+		Img.player.src = "./img/game/player.png";
+		Img.bat = new Image();
+		Img.bat.src = './img/game/bat.png';
+		Img.bee = new Image();
+		Img.bee.src = './img/game/bee.png';
+		Img.bullet = new Image();
+		Img.bullet.src = './img/game/bullet.png';
+		Img.upgrade1 = new Image();
+		Img.upgrade1.src = './img/game/upgrade1.png';
+		Img.upgrade2 = new Image();
+		Img.upgrade2.src = './img/game/upgrade2.png';
+
+		// Function for collision with objects in map
+		testCollisionRectRect = function(rect1,rect2){
+			return rect1.x <= rect2.x+rect2.width
+				&& rect2.x <= rect1.x+rect1.width
+				&& rect1.y <= rect2.y + rect2.height
+				&& rect2.y <= rect1.y + rect1.height;
+		}
+
+		// When user clicks the left mouse button
+		document.onmousedown = function(mouse){
+			if(mouse.which === 1)
+				player.pressingMouseLeft = true;
+			else
+				player.pressingMouseRight = true;
+		}
+
+		// When user releases the left mouse button
+		document.onmouseup = function(mouse){
+			if(mouse.which === 1)
+				player.pressingMouseLeft = false;
+			else
+				player.pressingMouseRight = false;
+		}
+
+		document.oncontextmenu = function(mouse){
+			mouse.preventDefault();
+		}
+
+		//When mouse moves around the map,
+		document.onmousemove = function(mouse){
+			var mouseX = mouse.clientX - canvas.getBoundingClientRect().left;
+			var mouseY = mouse.clientY - canvas.getBoundingClientRect().top;
+
+			mouseX -= CANVAS_WIDTH/2;
+			mouseY -= CANVAS_HEIGHT/2;
+
+			player.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180;
+		}
+
+		// ------- keys for movements -------
+		var playerMovement = {
+			up: false,
+			down: false,
+			left: false,
+			right: false
+		}
+
+		// when key is pressed
+		document.addEventListener('keydown', function (event) {
+			switch (event.keyCode) {
+				case 65: // A
+				player.pressingLeft = true;
+					break;
+				case 87: // W
+				player.pressingUp = true;
+					break;
+				case 68: // D
+				player.pressingRight = true;
+					break;
+				case 83: // S
+				player.pressingDown = true;
+					break;
+			}
+		});
+
+		// when key is not pressed
+		document.addEventListener('keyup', function (event) {
+			switch (event.keyCode) {
+				case 65: // A
+				player.pressingLeft = false;
+					break;
+				case 87: // W
+				player.pressingUp = false;
+					break;
+				case 68: // D
+				player.pressingRight = false;
+					break;
+				case 83: // S
+				player.pressingDown = false;
+					break;
+			}
+		});
+
+        // Update function which resets every object required for game.
+		update = function(){
+
+			if(paused){
+				ctx.fillText('Paused',WIDTH/2,HEIGHT/2);
+				return;
+			}
+
+			ctx.clearRect(0,0,WIDTH,HEIGHT);
+			Maps.current.draw();
+			frameCount++;
+			score++;
+
+
+			Bullet.update();
+			Upgrade.update();
+			Enemy.update();
+
+			player.update();
+
+			ctx.fillText(player.hp + " Hp",0,30);
+			ctx.fillText('Score: ' + score,200,30);
+		}
+
+		// Function to change object values at start of game
+		startNewGame = function(){
+			player.hp = 10;
+			timeWhenGameStarted = Date.now();
+			frameCount = 0;
+			score = 0;
+			Enemy.list = {};
+			Upgrade.list = {};
+			Bullet.list = {};
+			Enemy.randomlyGenerate();
+			Enemy.randomlyGenerate();
+			Enemy.randomlyGenerate();
+
+		}
+
+		// Creating map 
+		Maps = function(id,imgSrc,grid){
+			var self = {
+				id:id,
+				image:new Image(),
+				width:grid[0].length * TILE_SIZE,
+				height:grid.length * TILE_SIZE,
+				grid:grid,
+			}
+			self.image.src = imgSrc;
+
+			self.isPositionWall = function(pt){
+				var gridX = Math.floor(pt.x / TILE_SIZE);
+				var gridY = Math.floor(pt.y / TILE_SIZE);
+				if(gridX < 0 || gridX >= self.grid[0].length)
+					return true;
+				if(gridY < 0 || gridY >= self.grid.length)
+					return true;
+				return self.grid[gridY][gridX];
+			}
+
+			self.draw = function(){
+				var x = WIDTH/2 - player.x;
+				var y = HEIGHT/2 - player.y;
+				ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width*2,self.image.height*2);
+
+			}
+			return self;
+		}
+
+		var array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+		var array2D = [];
+		for(var i = 0 ; i < 40; i++){
+			array2D[i] = [];
+			for(var j = 0 ; j < 40; j++){
+				array2D[i][j] = array[i * 40 + j];
+			}
+		}
+
+		Maps.current = Maps('field','../img/game/map.png',array2D);
+
+
+        // Creating player object and calling the startNewGame object.
+		player = Player();
+		startNewGame();
+
+		//Executes specifed object at set intervals
+		setInterval(update,40);
+		setInterval(() => {
+			socket.emit('movement', playerMovement);
+		}, 1000 / 60);
+
+
+	</script>
+
+</body>
+
+</html>

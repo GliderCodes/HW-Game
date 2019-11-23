@@ -23,7 +23,7 @@ User.prototype = {
 
             else {
                 Player.findOne({
-                    username: user
+                    username: userw
                 }, function (err, player) {
                     if (err) throw err;
                     if (!player) return callback(null)

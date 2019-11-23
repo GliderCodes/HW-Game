@@ -69,7 +69,7 @@ app.set('view engine', 'html');
 // Using routers 
 app.use('/', pageRouter)
 
-// Errors object => page not found 404
+// Errors => page not found 404
 app.use((req, res, next) => {
     var err = new Error('Page not found');
     err.status = 404;
@@ -100,17 +100,17 @@ function valueExists(jsObj, value, cb){
     }
     return cb(key, false);
 }
-
-// Socket connection for players/clients
+// socket connection for players/clients
 var players = {};
 io.on('connection', function (socket) {
     
+    // console.log(socket.id)
     var playerdb = socket.request.session.user
-
+    // console.log(players)
     if (playerdb)
     valueExists(players, playerdb.username, function(key, exists) {
         if (exists) {
-
+            // console.log(players[key])
             delete players[key] 
             players[socket.id] = {
                 username: playerdb.username,
@@ -154,7 +154,6 @@ io.on('connection', function (socket) {
         }
     });
 });
-
 setInterval(function () {
     io.sockets.emit('state', players);
 }, 1000 / 60);

@@ -69,7 +69,7 @@ app.set('view engine', 'html');
 // Using routers 
 app.use('/', pageRouter)
 
-// Errors=> page not found 404
+// Errors => page not found 404
 app.use((req, res, next) => {
     var err = new Error('Page not found');
     err.status = 404;

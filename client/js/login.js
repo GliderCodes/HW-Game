@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Player = require("../../server/core/playerSchema");
-
+// validation for login
 function validate() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
@@ -19,7 +19,7 @@ function validate() {
         }
     })
 }
-
+// Sign up for the users 
 function signUp() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;

@@ -13,7 +13,7 @@ const pageRouter = require('./router/pages')
 const RedisStore = require("connect-redis")(session);
 
 
-
+require('./Entity')
 // Constant variables important for assignments
 const config = require('./config.json');
 const client = path.resolve("../client")
@@ -22,7 +22,7 @@ const debug = config.debug;
 
 // Mongoose database configuration
 const mongoose = require("mongoose");
-const Player = require('./core/playerSchema')
+const playerSchema = require('./core/playerSchema')
 
 // Mongoose database connection
 mongoose.connect('mongodb://localhost/my_database', {
@@ -101,38 +101,41 @@ function valueExists(jsObj, value, cb){
     return cb(key, false);
 }
 // socket connection for players/clients
+var SOCKET_LIST = {};
 var players = {};
 io.on('connection', function (socket) {
-    
+    socket.id = Math.random();
+    SOCKET_LIST[socket.id] = socket;
     // console.log(socket.id)
     var playerdb = socket.request.session.user
     // console.log(players)
     if (playerdb)
-    valueExists(players, playerdb.username, function(key, exists) {
-        if (exists) {
-            // console.log(players[key])
-            delete players[key] 
-            players[socket.id] = {
-                username: playerdb.username,
-                x: playerdb.x,
-                y: playerdb.y
-            };
+        valueExists(players, playerdb.username, function (key, exists) {
+            if (exists) {
+                // console.log(players[key])
+                delete players[key]
+                players[socket.id] = {
+                    username: playerdb.username,
+                    x: playerdb.x,
+                    y: playerdb.y
+                };
 
-        } else {
-            players[socket.id] = {
-                username: playerdb.username,
-                x: playerdb.x,
-                y: playerdb.y
-            };
-        }
-    })
+            } else {
+                players[socket.id] = {
+                    username: playerdb.username,
+                    x: playerdb.x,
+                    y: playerdb.y
+                };
+            }
+            Player.onConnect(socket, playerdb.username, null)
+        })
     console.log(players)
 
     // Socket listener for when players disconnect
     socket.on('disconnect', function () {
         console.log("Disconnected")
         if (players[socket.id] && players[socket.id].x != undefined && players[socket.id].y != undefined) {
-            Player.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
+            playerSchema.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
         }
         delete players[socket.id];
     });
@@ -156,4 +159,12 @@ io.on('connection', function (socket) {
 });
 setInterval(function () {
     io.sockets.emit('state', players);
+    var packs = Entity.getFrameUpdateData();
+    for (var i in SOCKET_LIST) {
+        var socket = SOCKET_LIST[i];
+        io.sockets.emit('state', players);
+        socket.emit('init', packs.initPack);
+        socket.emit('update', packs.updatePack);
+        socket.emit('remove', packs.removePack);
+    }
 }, 1000 / 60);

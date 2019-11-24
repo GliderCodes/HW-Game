@@ -66,7 +66,6 @@ Entity = function(type,id,x,y,width,height,img){
 	return self;
 }
 
-//Player object created
 Player = function(){
 	var self = Actor('player','myId',50,40,50*1.5,70*1.5,Img.player,10,1);
 	self.maxMoveSpd = 10;

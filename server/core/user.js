@@ -54,27 +54,7 @@ User.prototype = {
                 }).catch(err => console.log(err));
             }
         })
-        // Player.findOne({
-        //     username: body.username
-        // }, function (err, player) {
-        //     if (err) throw err;
-        //     if (player) throw "username already exists";
-        //     if (!player) {
-        //         const player = new Player({
-        //             _id: new mongoose.Types.ObjectId(),
-        //             username: body.username,
-        //             password: body.password,
-        //             x: 10,
-        //             y: 20,
-        //             health: 10,
-        //             score: 0,
-        //             kills: 0
-        //         });
-        //         player.save().then(result => {
-        //             callback(result._id)
-        //         }).catch(err => console.log(err));
-        //     }
-        // })
+ 
     },
 
     login: function (username, password, callback) {

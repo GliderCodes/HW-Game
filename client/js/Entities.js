@@ -441,19 +441,19 @@ Bullet.update = function(){
 
 //Generation of bullets according to angle of player
 Bullet.generate = function(actor,aimOverwrite){
-	var x = actor.x;
-	var y = actor.y;
+	var x = actor.x;//player one 
+	var y = actor.y;//player two
 	var height = 24;
 	var width = 24;
 	var id = Math.random();
 	
-	var angle;
+	var angle;//angle of the mouse store in this variable
 	if(aimOverwrite !== undefined)
-		angle = aimOverwrite;
-	else angle = actor.aimAngle;
+		angle = aimOverwrite;//if the angle of mouse is undefined then assign the aimoverwrite to angle
+	else angle = actor.aimAngle;//otherwise bullet moves in the mouse angle
 	
 	var spdX = Math.cos(angle/180*Math.PI)*5;
 	var spdY = Math.sin(angle/180*Math.PI)*5;
-	Bullet(id,x,y,spdX,spdY,width,height,actor.type);
+	Bullet(id,x,y,spdX,spdY,width,height,actor.type);//passing the parameters to bullet function 
 }
 

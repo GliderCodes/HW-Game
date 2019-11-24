@@ -87,7 +87,7 @@ Player = function(){
 	
 	//When player dies
 	self.onDeath = function(){
-		var timeSurvived = Date.now() - timeWhenGameStarted;		
+		var timeSurvived = Date.now() - timeWhenGameStarted;
 		console.log("You lost! You survived for " + timeSurvived + " ms.");		
 		startNewGame();
 	}

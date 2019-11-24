@@ -873,7 +873,7 @@
   }
 
   60% {
-    opacity: 1;
+    opacity: 0;
     -webkit-transform: translate3d(25px, 0, 0);
     transform: translate3d(25px, 0, 0);
   }
@@ -3354,7 +3354,7 @@
 @keyframes slideInUp {
   from {
     -webkit-transform: translate3d(0, 100%, 0);
-    transform: translate3d(0, 100%, 0);
+    transform: translate3d(1, 90%, 0);
     visibility: visible;
   }
 
@@ -3385,7 +3385,7 @@
 @keyframes slideOutDown {
   from {
     -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(1, 1, 1);
   }
 
   to {

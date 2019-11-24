@@ -410,7 +410,6 @@ Bullet = function (id,x,y,spdX,spdY,width,height,combatType){
 		
 	}
 	
-	
 	self.updatePosition = function(){
 		self.x += self.spdX;
 		self.y += self.spdY;
@@ -441,7 +440,6 @@ Bullet.update = function(){
 }
 
 //Generation of bullets according to angle of player
-
 Bullet.generate = function(actor,aimOverwrite){
 	var x = actor.x;
 	var y = actor.y;

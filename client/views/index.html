@@ -190,14 +190,14 @@ $(document).ready(function () {
 		CANVAS_WIDTH = window.innerWidth - 2;
 		CANVAS_HEIGHT = window.innerHeight - 2;
 
-		let ratio = 4 / 3;
+		let ratio = 4/3;
 		if(CANVAS_HEIGHT < CANVAS_WIDTH / ratio)
 			CANVAS_WIDTH = CANVAS_HEIGHT * ratio;
 		else
 			CANVAS_HEIGHT = CANVAS_WIDTH / ratio;
 
-		canvas.width = WIDTH;
-		canvas.height = HEIGHT;
+		canvas.width = WIDTH + 100 ;
+		canvas.height = HEIGHT + 100;
 		ctx.font = '30px Arial';
 		ctx.mozImageSmoothingEnabled = false;	//better graphics for pixel art
 		ctx.msImageSmoothingEnabled = false;
@@ -294,6 +294,9 @@ $(document).ready(function () {
 				case 83: // S
 				player.pressingDown = true;
 					break;
+				case 80: // p
+				paused = !paused;
+					break;
 			}
 		});
 
@@ -319,7 +322,7 @@ $(document).ready(function () {
 		update = function(){
 
 			if(paused){
-				ctx.fillText('Paused',WIDTH/2,HEIGHT/2);
+				ctx.fillText('Paused',WIDTH/2.5,HEIGHT/2.5);
 				return;
 			}
 

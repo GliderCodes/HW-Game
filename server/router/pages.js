@@ -16,11 +16,7 @@ router.get('/', (req, res, next) => {
 
     // If there is a session named user that means the user is logged in. So we redirect him to the home page by using /home route below
     if (user) {
-<<<<<<< HEAD
-        // console.log(req.session)
-=======
 
->>>>>>> 5727ca08eed9f40b657c856e1d75a80418b611f7
         console.log(req.session.sid + " is logged in")
         res.render('index', {
             opp: req.session.opp,

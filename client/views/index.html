@@ -73,7 +73,7 @@ $(document).ready(function () {
 				<div class="row">
 					<div class="col-lg-6 pr-0">
 						<span id="user.name" style="display: none">{{name}}</span>
-						<h2>Pixel Art</h2>
+						<h2>Pixel Wars</h2>
 						<p>An adventure game where you fight each other to until you get the throne, completely
 							unfinished but hey!</p>
 					</div>
@@ -181,7 +181,7 @@ $(document).ready(function () {
 		var WIDTH = 640;
 		var HEIGHT = 360;
 		var CANVAS_WIDTH = 640;
-		var CANVAS_HEIGHT = 360;
+		var CANVAS_HEIGHT = 260;
 		var timeWhenGameStarted = Date.now();	//return time in milliseconds
 
 
@@ -199,7 +199,7 @@ $(document).ready(function () {
 		canvas.width = WIDTH + 100 ;
 		canvas.height = HEIGHT + 100;
 		ctx.font = '30px Arial';
-		ctx.mozImageSmoothingEnabled = false;	//better graphics for pixel art
+		ctx.mozImageSmoothingEnabled = false;	
 		ctx.msImageSmoothingEnabled = false;
 		ctx.imageSmoothingEnabled = false;
 

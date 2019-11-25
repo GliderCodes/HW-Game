@@ -67,15 +67,17 @@ Entity = function(type,id,x,y,width,height,img){
 }
 
 //Player object created
-Player = function(){
+Player = function(socket){
+	console.log(socket)
 	var self = Actor('player','myId',50,40,50*1.5,70*1.5,Img.player,10,1);
 	self.maxMoveSpd = 10;
+	self.score = 0;
 	self.pressingMouseLeft = false;
 	self.pressingMouseRight = false;
 	
 	// Special attacks of player on mouse clicks
 	var super_update = self.update;
-	self.update = function(){
+	self.update = function(newScore){
 		super_update();
 		if(self.pressingRight || self.pressingLeft || self.pressingDown || self.pressingUp)
 			self.spriteAnimCounter += 0.2;
@@ -83,13 +85,22 @@ Player = function(){
 			self.performAttack();
 		if(self.pressingMouseRight)
 			self.performSpecialAttack();
+		if(newScore > self.score) {
+			console.log(newScore)
+			self.score = newScore
+		}
+			
 	}	
 	
 	//When player dies
 	self.onDeath = function(){
-		var timeSurvived = Date.now() - timeWhenGameStarted;		
-		console.log("You lost! You survived for " + timeSurvived + " ms.");		
+		var timeSurvived = Date.now() - timeWhenGameStarted;
+		console.log("You lost! You survived for " + timeSurvived + " ms.");	
+		socket.emit('onDeath', self.score);	
+		console.log("our score" + self.score)
+		
 		startNewGame();
+		
 	}
 
 	return self;
@@ -205,7 +216,7 @@ Actor = function(type,id,x,y,width,height,img,hp,atkSpd){
 		if(self.hp <= 0)
 			self.onDeath();
 	}
-	self.onDeath = function(){};
+	// self.onDeath = function(){};
 	
 	//Object for normal attack
 	self.performAttack = function(){

@@ -104,7 +104,6 @@ function valueExists(jsObj, value, cb){
 var players = {};
 io.on('connection', function (socket) {
     
-    // console.log(socket.id)
     var playerdb = socket.request.session.user
     // console.log(players)
     if (playerdb)
@@ -115,14 +114,16 @@ io.on('connection', function (socket) {
             players[socket.id] = {
                 username: playerdb.username,
                 x: playerdb.x,
-                y: playerdb.y
+                y: playerdb.y,
+                score: 0
             };
 
         } else {
             players[socket.id] = {
                 username: playerdb.username,
                 x: playerdb.x,
-                y: playerdb.y
+                y: playerdb.y,
+                score:0
             };
         }
     })
@@ -153,7 +154,30 @@ io.on('connection', function (socket) {
             player.y += 5;
         }
     });
+    socket.on('storeOldScore', function(oldScore) {
+        console.log("Storing Score: "+oldScore)
+        if (players[socket])
+            players[socket.id].score = oldScore
+    })
+    socket.on('onDeath', function(param) {
+        // console.log(socket)
+        // console.log(players[socket.id])
+        if (players[socket.id] != undefined)
+        var playerUsername = players[socket.id].username
+        
+        Player.findOne({username:playerUsername}, function(err, player) {
+            if (player.score < param) {
+                socket.send(param)
+                Player.findOneAndUpdate({username: playerUsername}, {score: param}, (err) => {
+                    console.log(err)
+                })
+        }else {
+            socket.send(player.score)
+        }})
+        
+    })
 });
 setInterval(function () {
     io.sockets.emit('state', players);
+    
 }, 1000 / 60);

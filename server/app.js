@@ -170,7 +170,7 @@ io.on('connection', function (socket) {
         var playerUsername = players[socket.id].username
         
         Player.findOne({username:playerUsername}, function(err, player) {
-            if (player.score < param) {
+            if (player && player.score < param) {
                 socket.send(param)
                 Player.findOneAndUpdate({username: playerUsername}, {score: param}, (err) => {
                     console.log(err)

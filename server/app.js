@@ -85,7 +85,7 @@ app.use((err, req, res, next) => {
 
 // server events and listening
 server.on("error", (err) => {
-    console.log('Server Error: ' + err);
+    console.log('Server Error: ' + err);//if error occur during the game it will print "Server error " and the type of the error
 });
 
 // listening to the port
@@ -107,7 +107,7 @@ io.on('connection', function (socket) {
     var playerdb = socket.request.session.user
     // console.log(players)
     if (playerdb)
-    valueExists(players, playerdb.username, function(key, exists) {
+    valueExists(players, playerdb.username, function(key, exists) {// this function will check whether the user name and password are present in the data base or not
         if (exists) {
             // console.log(players[key])
             delete players[key] 
@@ -127,7 +127,7 @@ io.on('connection', function (socket) {
             };
         }
     })
-    console.log(players)
+    console.log(players) 
 
     // Socket listener for when players disconnect
     socket.on('disconnect', function () {
@@ -142,16 +142,16 @@ io.on('connection', function (socket) {
     socket.on('movement', function (data) {
         var player = players[socket.id];
         if (data.left) {
-            player.x -= 5;
+            player.x -= 5;//if the player moves left reduce the value by 5
         }
         if (data.up) {
-            player.y -= 5;
+            player.y -= 5;//if the player moves up  reduce the value by 5
         }
         if (data.right) {
-            player.x += 5;
+            player.x += 5;//if the player moves right  increase the value by 5
         }
         if (data.down) {
-            player.y += 5;
+            player.y += 5;//if  the player moves down increase the value by 5
         }
     });
     socket.on('storeOldScore', function(oldScore) {
@@ -159,7 +159,7 @@ io.on('connection', function (socket) {
         if (players[socket])
             players[socket.id].score = oldScore
     })
-    socket.on('onDeath', function(param) {
+    socket.on('onDeath', function(param) {  
         // console.log(socket)
         // console.log(players[socket.id])
         if (players[socket.id] != undefined)

@@ -86,12 +86,21 @@ ol {
 #canvas-wrap {
 	
 	width: 50vw;
-  height: 50vh;
+    height: 50vh;
 	text-align: center;
 	margin: 0 auto;
 	margin-top: 5%;
 	align-content: center;
 }a
+
+.Leaderboards{
+  
+  align-content: center;
+	border:black;
+	
+	border-width: 10px;
+
+}
 
 /*---------------------
   Helper CSS

@@ -7,9 +7,12 @@ Entity = function(param){
 		x:250,
 		y:250,
 		spdX:0,
-		spdY:0,
+        spdY:0,
+        width:5,
+		height:5,
 		id:"",
-		map:'forest',
+        map:'forest',
+        img: ''
 	}
 	if(param){
 		if(param.x)
@@ -19,18 +22,44 @@ Entity = function(param){
 		if(param.map)
 			self.map = param.map;
 		if(param.id)
-			self.id = param.id;		
+            self.id = param.id;	
+        if(param.spdX)
+            self.spdX = param.spdX;
+        if(param.spdY)
+            self.spdY = param.spdY;	
+        if(param.img)
+            self.img = param.img;
+        if(param.height)
+            self.height = param.height;
+        if(param.width) 
+            self.width = param.width;
 	}
 	
 	self.update = function(){
-		self.updatePosition();
-	}
+        self.updatePosition();
+    }
 	self.updatePosition = function(){
 		self.x += self.spdX;
 		self.y += self.spdY;
 	}
 	self.getDistance = function(pt){
 		return Math.sqrt(Math.pow(self.x-pt.x,2) + Math.pow(self.y-pt.y,2));
+    }
+    self.testCollision = function(entity2){	//return if colliding (true/false)
+		var rect1 = {
+			x:self.x-self.width/2,
+			y:self.y-self.height/2,
+			width:self.width,
+			height:self.height,
+		}
+		var rect2 = {
+			x:entity2.x-entity2.width/2,
+			y:entity2.y-entity2.height/2,
+			width:entity2.width,
+			height:entity2.height,
+		}
+		return testCollisionRectRect(rect1,rect2);
+		
 	}
 	return self;
 }
@@ -56,9 +85,138 @@ Entity.getFrameUpdateData = function(){
 	return pack;
 }
 
+Actor = function(param) {
+    var self = Entity(param)
+    self.hp = hp;
+	self.hpMax = hp;
+	self.atkSpd = atkSpd;
+	self.attackCounter = 0;
+	self.aimAngle = 0;
+	
+	self.spriteAnimCounter = 0;
+	
+	self.pressingDown = false;
+	self.pressingUp = false;
+	self.pressingLeft = false;
+	self.pressingRight = false;
+	self.maxMoveSpd = 3;
+	
 
-Player = function(param){
-	var self = Entity(param);
+	//Drawing Player with scrollable camera angle attributes
+	self.draw = function(){
+		ctx.save();
+		var x = self.x - player.x;
+		var y = self.y - player.y;
+		
+		x += WIDTH/2;
+		y += HEIGHT/2;
+		
+		x -= self.width/2;
+		y -= self.height/2;
+		
+		var frameWidth = self.img.width/3;
+		var frameHeight = self.img.height/4;
+		
+		var aimAngle = self.aimAngle;
+		if(aimAngle < 0)
+			aimAngle = 360 + aimAngle;
+		
+		var directionMod = 3;	//draw right
+		if(aimAngle >= 45 && aimAngle < 135)	//down
+			directionMod = 2;
+		else if(aimAngle >= 135 && aimAngle < 225)	//left
+			directionMod = 1;
+		else if(aimAngle >= 225 && aimAngle < 315)	//up
+			directionMod = 0;
+		
+		var walkingMod = Math.floor(self.spriteAnimCounter) % 3;//1,2
+		
+		ctx.drawImage(self.img,
+			walkingMod*frameWidth,directionMod*frameHeight,frameWidth,frameHeight,
+			x,y,self.width,self.height
+		);
+		
+		ctx.restore();
+	}
+	
+
+	//Changes position of player on movement keys and adding bump on edge or immovable game objects
+	self.updatePosition = function(){
+		var leftBumper = {x:self.x - 40,y:self.y};
+		var rightBumper = {x:self.x + 40,y:self.y};
+		var upBumper = {x:self.x,y:self.y - 16};
+		var downBumper = {x:self.x,y:self.y + 64};
+		
+		if(Maps.current.isPositionWall(rightBumper)){
+			self.x -= 5;
+		} else {
+			if(self.pressingRight)
+				self.x += self.maxMoveSpd;			
+		}
+		
+		if(Maps.current.isPositionWall(leftBumper)){
+			self.x += 5;
+		} else {
+			if(self.pressingLeft)
+				self.x -= self.maxMoveSpd;
+		}
+		if(Maps.current.isPositionWall(downBumper)){
+			self.y -= 5;
+		} else {
+			if(self.pressingDown)
+				self.y += self.maxMoveSpd;
+		}
+		if(Maps.current.isPositionWall(upBumper)){
+			self.y += 5;
+		} else {
+			if(self.pressingUp)
+				self.y -= self.maxMoveSpd;
+		}
+		
+		// Is the position valid
+		if(self.x < self.width/2)
+			self.x = self.width/2;
+		if(self.x > Maps.current.width-self.width/2)
+			self.x = Maps.current.width - self.width/2;
+		if(self.y < self.height/2)
+			self.y = self.height/2;
+		if(self.y > Maps.current.height - self.height/2)
+			self.y = Maps.current.height - self.height/2;
+
+	}
+	
+	var super_update = self.update;
+	self.update = function(){
+		super_update();
+		self.attackCounter += self.atkSpd;
+		if(self.hp <= 0)
+			self.onDeath();
+	}
+	self.onDeath = function(){};
+	
+	//Object for normal attack
+	self.performAttack = function(){
+		if(self.attackCounter > 25){	//every 1 sec
+			self.attackCounter = 0;
+			Bullet.generate(self);
+		}
+	}
+	
+	//Object for special attack
+	self.performSpecialAttack = function(){
+		if(self.attackCounter > 50){	//every 1 sec
+			self.attackCounter = 0;
+			Bullet.generate(self,self.aimAngle - 5);
+			Bullet.generate(self,self.aimAngle);
+			Bullet.generate(self,self.aimAngle + 5);
+		}
+	}
+
+	
+	return self;
+}
+Player = function(socket, param){
+	var self = Actor(param);
 	self.number = "" + Math.floor(10 * Math.random());
 	self.username = param.username;
 	self.pressingRight = false;
@@ -76,37 +234,42 @@ Player = function(param){
 	self.update = function(){
 		self.updateSpd();
 		
-		super_update();
-		
+        super_update();
+        if(self.pressingRight || self.pressingLeft || self.pressingDown || self.pressingUp)
+			self.spriteAnimCounter += 0.2;
 		if(self.pressingAttack){
-			self.shootBullet(self.mouseAngle);
-		}
+            socket.on('mouseAngle', function(angle) {
+                self.mouseAngle = angle
+            })
+            self.performAttack();
+        }
+			
 	}
-	self.shootBullet = function(angle){
-		Bullet({
-			parent:self.id,
-			angle:angle,
-			x:self.x,
-			y:self.y,
-			map:self.map,
-		});
-	}
+	// self.shootBullet = function(angle){
+	// 	Bullet({
+	// 		parent:self.id,
+	// 		angle:angle,
+	// 		x:self.x,
+	// 		y:self.y,
+	// 		map:self.map,
+	// 	});
+	// }
 	
-	self.updateSpd = function(){
-		if(self.pressingRight)
-			self.spdX = self.maxSpd;
-		else if(self.pressingLeft)
-			self.spdX = -self.maxSpd;
-		else
-			self.spdX = 0;
+	// self.updateSpd = function(){
+	// 	if(self.pressingRight)
+	// 		self.spdX = self.maxSpd;
+	// 	else if(self.pressingLeft)
+	// 		self.spdX = -self.maxSpd;
+	// 	else
+	// 		self.spdX = 0;
 		
-		if(self.pressingUp)
-			self.spdY = -self.maxSpd;
-		else if(self.pressingDown)
-			self.spdY = self.maxSpd;
-		else
-			self.spdY = 0;		
-	}
+	// 	if(self.pressingUp)
+	// 		self.spdY = -self.maxSpd;
+	// 	else if(self.pressingDown)
+	// 		self.spdY = self.maxSpd;
+	// 	else
+	// 		self.spdY = 0;		
+	// }
 	
 	self.getInitPack = function(){
 		return {
@@ -139,7 +302,7 @@ Player = function(param){
 Player.list = {};
 Player.onConnect = function(socket,username,progress){
 	var map = 'field';
-	var player = Player({
+	var player = Player(socket, {
 		username:username,
 		id:socket.id,
 		map:map,

@@ -13,7 +13,7 @@ const pageRouter = require('./router/pages')
 const RedisStore = require("connect-redis")(session);
 
 
-require('./Entity')
+
 // Constant variables important for assignments
 const config = require('./config.json');
 const client = path.resolve("../client")
@@ -22,7 +22,7 @@ const debug = config.debug;
 
 // Mongoose database configuration
 const mongoose = require("mongoose");
-const playerSchema = require('./core/playerSchema')
+const Player = require('./core/playerSchema')
 
 // Mongoose database connection
 mongoose.connect('mongodb://localhost/my_database', {
@@ -101,41 +101,39 @@ function valueExists(jsObj, value, cb){
     return cb(key, false);
 }
 // socket connection for players/clients
-var SOCKET_LIST = {};
 var players = {};
 io.on('connection', function (socket) {
-    socket.id = Math.random();
-    SOCKET_LIST[socket.id] = socket;
-    // console.log(socket.id)
+    
     var playerdb = socket.request.session.user
     // console.log(players)
     if (playerdb)
-        valueExists(players, playerdb.username, function (key, exists) {
-            if (exists) {
-                // console.log(players[key])
-                delete players[key]
-                players[socket.id] = {
-                    username: playerdb.username,
-                    x: playerdb.x,
-                    y: playerdb.y
-                };
+    valueExists(players, playerdb.username, function(key, exists) {
+        if (exists) {
+            // console.log(players[key])
+            delete players[key] 
+            players[socket.id] = {
+                username: playerdb.username,
+                x: playerdb.x,
+                y: playerdb.y,
+                score: 0
+            };
 
-            } else {
-                players[socket.id] = {
-                    username: playerdb.username,
-                    x: playerdb.x,
-                    y: playerdb.y
-                };
-            }
-            Player.onConnect(socket, playerdb.username, null)
-        })
+        } else {
+            players[socket.id] = {
+                username: playerdb.username,
+                x: playerdb.x,
+                y: playerdb.y,
+                score:0
+            };
+        }
+    })
     console.log(players)
 
     // Socket listener for when players disconnect
     socket.on('disconnect', function () {
         console.log("Disconnected")
         if (players[socket.id] && players[socket.id].x != undefined && players[socket.id].y != undefined) {
-            playerSchema.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
+            Player.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
         }
         delete players[socket.id];
     });
@@ -156,15 +154,30 @@ io.on('connection', function (socket) {
             player.y += 5;
         }
     });
+    socket.on('storeOldScore', function(oldScore) {
+        console.log("Storing Score: "+oldScore)
+        if (players[socket])
+            players[socket.id].score = oldScore
+    })
+    socket.on('onDeath', function(param) {
+        // console.log(socket)
+        // console.log(players[socket.id])
+        if (players[socket.id] != undefined)
+        var playerUsername = players[socket.id].username
+        
+        Player.findOne({username:playerUsername}, function(err, player) {
+            if (player.score < param) {
+                socket.send(param)
+                Player.findOneAndUpdate({username: playerUsername}, {score: param}, (err) => {
+                    console.log(err)
+                })
+        }else {
+            socket.send(player.score)
+        }})
+        
+    })
 });
 setInterval(function () {
     io.sockets.emit('state', players);
-    var packs = Entity.getFrameUpdateData();
-    for (var i in SOCKET_LIST) {
-        var socket = SOCKET_LIST[i];
-        io.sockets.emit('state', players);
-        socket.emit('init', packs.initPack);
-        socket.emit('update', packs.updatePack);
-        socket.emit('remove', packs.removePack);
-    }
+    
 }, 1000 / 60);

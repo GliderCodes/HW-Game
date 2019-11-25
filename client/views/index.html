@@ -86,9 +86,20 @@ $(document).ready(function () {
 
 	<!-- Canvas section start -->
 	<div id="canvas-wrap">
+<<<<<<< HEAD
 		
 		<canvas id="canvas"  style="border:1px solid #000000; background-image:url(../img/game/random.png); width:200px; height:200"></canvas>
 		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
+=======
+<<<<<<< HEAD
+		
+		<canvas id="canvas"  style="border:1px solid #000000; background-image:url(../img/game/random.png); width:200px; height:200"></canvas>
+		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
+=======
+		<canvas id="canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
+		<canvas id="ctx-ui" width="800" height="600"></canvas>
+>>>>>>> 0c7c0bacd45b2e7b1a7d3f437e7b1e31fc8527b2
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
 		<div id="overlay"></div>
 		
 	</div>
@@ -203,7 +214,16 @@ $(document).ready(function () {
 		var socket = io();
 		var canvas = document.getElementById("canvas");
 		var ctx = canvas.getContext("2d");
+<<<<<<< HEAD
 	
+=======
+<<<<<<< HEAD
+	
+=======
+		var ctxUi = document.getElementById("ctx-ui").getContext("2d");
+		ctxUi.font = '30px Arial';
+>>>>>>> 0c7c0bacd45b2e7b1a7d3f437e7b1e31fc8527b2
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
 
 		var TILE_SIZE = 32;
 		var WIDTH = 640;
@@ -355,12 +375,13 @@ $(document).ready(function () {
 				return;
 			}
 
+<<<<<<< HEAD
 			ctx.clearRect(0,0,WIDTH,HEIGHT);
 			Maps.current.draw();
 			frameCount++;
 			score++;
-
-
+=======
+<<<<<<< HEAD
 			Bullet.update();
 			Upgrade.update();
 			Enemy.update();
@@ -387,9 +408,54 @@ $(document).ready(function () {
 			Enemy.randomlyGenerate();
 			Enemy.randomlyGenerate();
 			Enemy.randomlyGenerate();
+=======
+		var Bullet = function (initPack) {
+			var self = {};
+			self.id = initPack.id;
+			self.x = initPack.x;
+			self.y = initPack.y;
+			self.map = initPack.map;
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
+
+
+			Bullet.update();
+			Upgrade.update();
+			Enemy.update();
+			
+
+<<<<<<< HEAD
+			player.update(score);
+			ctx.fillStyle = "#ff0000"
+=======
+				ctx.drawImage(Img.bullet,
+					0, 0, Img.bullet.width, Img.bullet.height,
+					x - width / 2, y - height / 2, width, height);
+			}
+>>>>>>> 0c7c0bacd45b2e7b1a7d3f437e7b1e31fc8527b2
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
+
+			ctx.fillText(player.hp + " Hp",0,30);
+			ctx.fillText('Score: ' + score,200,30);
+			ctx.fillText('HighScore: '+ highscore , 460,30)
+		}
+
+		// Function to change object values at start of game
+		startNewGame = function(){
+			player.hp = 10;
+			timeWhenGameStarted = Date.now();
+			frameCount = 0;
+			player.score = 0
+			score = 0;
+			Enemy.list = {};
+			Upgrade.list = {};
+			Bullet.list = {};
+			Enemy.randomlyGenerate();
+			Enemy.randomlyGenerate();
+			Enemy.randomlyGenerate();
 
 		}
 
+<<<<<<< HEAD
 		// Creating map 
 		Maps = function(id,imgSrc,grid){
 			var self = {
@@ -398,6 +464,38 @@ $(document).ready(function () {
 				width:grid[0].length * TILE_SIZE,
 				height:grid.length * TILE_SIZE,
 				grid:grid,
+=======
+			self.draw = function(){
+				var x = WIDTH/2 - player.x;
+				var y = HEIGHT/2 - player.y;
+				img = new Image();
+			img.src = './img/game/random.png';
+			
+				var ptrn = ctx.createPattern(img, 'repeat');
+				
+
+				ctx.fillStyle = ptrn;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width*2,self.image.height*2);
+
+		socket.on('update', function (data) {
+			//{ player : [{id:123,x:0,y:0},{id:1,x:0,y:0}], bullet: []}
+			for (var i = 0; i < data.player.length; i++) {
+				var pack = data.player[i];
+				var p = Player.list[pack.id];
+				if (p) {
+					if (pack.x !== undefined)
+						p.x = pack.x;
+					if (pack.y !== undefined)
+						p.y = pack.y;
+					if (pack.hp !== undefined)
+						p.hp = pack.hp;
+					if (pack.score !== undefined)
+						p.score = pack.score;
+					if (pack.map !== undefined)
+						p.map = pack.map;
+				}
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
 			}
 			self.image.src = imgSrc;
 
@@ -424,11 +522,68 @@ $(document).ready(function () {
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width*2,self.image.height*2);
 
+<<<<<<< HEAD
 			}
 			return self;
+=======
+<<<<<<< HEAD
+        // Creating player object and calling the startNewGame object.
+		player = Player(socket);
+		startNewGame();
+		updateScore = function() {
+			socket.on('message', function(msg){
+				console.log("score:" + msg)
+				highscore = msg
+				ctx.fillText('HighScore: '+ highscore , 350,30)
+			})
+			
 		}
 
+		//Executes specifed object at set intervals
+		setInterval(update,40);
+		setInterval(updateScore, 1600)
+		setInterval(() => {
+			socket.emit('movement', playerMovement);
+		}, 1000 / 60);
+=======
+		var drawScore = function () {
+			if (lastScore === Player.list[selfId].score)
+				return;
+			lastScore = Player.list[selfId].score;
+			ctxUi.clearRect(0, 0, 500, 500);
+			ctxUi.fillStyle = 'white';
+			ctxUi.fillText(Player.list[selfId].score, 0, 30);
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
+		}
+
+<<<<<<< HEAD
 		var array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+=======
+		}
+		document.onkeyup = function (event) {
+			if (event.keyCode === 68) //d
+				socket.emit('keyPress', {
+					inputId: 'right',
+					state: false
+				});
+			else if (event.keyCode === 83) //s
+				socket.emit('keyPress', {
+					inputId: 'down',
+					state: false
+				});
+			else if (event.keyCode === 65) //a
+				socket.emit('keyPress', {
+					inputId: 'left',
+					state: false
+				});
+			else if (event.keyCode === 87) // w
+				socket.emit('keyPress', {
+					inputId: 'up',
+					state: false
+				});
+		}
+>>>>>>> 0c7c0bacd45b2e7b1a7d3f437e7b1e31fc8527b2
+>>>>>>> 6fb7614ef5e1d9ecdf16892f8459d2b79b77d824
 
 		var array2D = [];
 		for(var i = 0 ; i < 40; i++){

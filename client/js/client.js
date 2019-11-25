@@ -135,10 +135,6 @@ document.addEventListener('keyup', function (event) {
 });
 
 update = function(){
-	if(paused){
-		ctx.fillText('Paused',WIDTH/2,HEIGHT/2);
-		return;
-	}
 
 	ctx.clearRect(0,0,WIDTH,HEIGHT);
 	Maps.current.draw();
@@ -152,7 +148,7 @@ update = function(){
 
 	player.update();
 
-	ctx.fillText(player.hp + " Hp",0,30);
+	ctx.fillText('HP: ' + player.hp,0,30);
 	ctx.fillText('Score: ' + score,200,30);
 }
 

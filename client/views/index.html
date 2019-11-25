@@ -3,7 +3,7 @@
 
 
 <head>
-	<title>Pixel Wars by Dop4Squ4d</title>
+	<title>Pixel Art by Dop4Squ4d</title>
 
 	<!-- Some data that that are not displayed on screen, but are machine parsable. -->
 	<meta charset="UTF-8">
@@ -31,19 +31,22 @@
 	<script src="js/socket.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function () {
-			// Handler for .ready() called.
-			$('html, body').animate({
-				scrollTop: $('#canvas').offset().top
-			}, 'slow');
-		});
-	</script>
+	
+
+$(document).ready(function () {
+    // Handler for .ready() called.
+    $('html, body').animate({
+        scrollTop: $('#canvas').offset().top
+    }, 'slow');
+});
+
+</script>
 
 </head>
 
 <body>
 	<!-- Page Preloder -->
-
+	
 	<!-- Header section -->
 	<header class="header-section">
 		<a href="./index.html" class="site-logo">Dop3Squ4d</a>
@@ -70,7 +73,7 @@
 				<div class="row">
 					<div class="col-lg-6 pr-0">
 						<span id="user.name" style="display: none">{{name}}</span>
-						<h2>Pixel Wars</h2>
+						<h2>Pixel Art</h2>
 						<p>An adventure game where you fight each other to until you get the throne, completely
 							unfinished but hey!</p>
 					</div>
@@ -83,14 +86,41 @@
 
 	<!-- Canvas section start -->
 	<div id="canvas-wrap">
-		<canvas id="canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
-		<canvas id="ctx-ui" width="800" height="600"></canvas>
+		
+		<canvas id="canvas"  style="border:1px solid #000000; background-image:url(../img/game/random.png); width:200px; height:200"></canvas>
+		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
 		<div id="overlay"></div>
+		
 	</div>
+
+
 	<script src="js/client.js"></script>
+	
 	<!-- Canvas section end -->
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 	<!-- Features section -->
 	<section class="features-section spad">
 		<div class="container">
@@ -158,27 +188,65 @@
 
 
 	<script>
-		// socket connect established
+		
+		// Welcome user check
+		var render_user = document.getElementById("user.name");
+		if (render_user) {
+			document.getElementById("user-panel").removeAttribute("href");
+			document.getElementById("user-panel2").removeAttribute("href");
+			document.getElementById("user-panel").innerHTML = "Welcome";
+			document.getElementById("user-panel2").innerHTML = render_user.innerText;
+		}
+
+
+		// socket connection established
 		var socket = io();
 		var canvas = document.getElementById("canvas");
 		var ctx = canvas.getContext("2d");
-		var ctxUi = document.getElementById("ctx-ui").getContext("2d");
-		ctxUi.font = '30px Arial';
+	
 
 		var TILE_SIZE = 32;
 		var WIDTH = 640;
 		var HEIGHT = 360;
 		var CANVAS_WIDTH = 640;
-		var CANVAS_HEIGHT = 360;
-		var timeWhenGameStarted = Date.now(); //return time in ms
+		var CANVAS_HEIGHT = 260;
+		var timeWhenGameStarted = Date.now();	//return time in milliseconds
+
+
+		// Resizing canvas for game use
+		let resizeCanvas = function(){
+		CANVAS_WIDTH = window.innerWidth - 2;
+		CANVAS_HEIGHT = window.innerHeight - 2;
+
+		let ratio = 4/3;
+		if(CANVAS_HEIGHT < CANVAS_WIDTH / ratio)
+			CANVAS_WIDTH = CANVAS_HEIGHT * ratio;
+		else
+			CANVAS_HEIGHT = CANVAS_WIDTH / ratio;
+
+		canvas.width = WIDTH + 100 ;
+		canvas.height = HEIGHT + 100;
+		ctx.font = '30px Arial';
+		ctx.mozImageSmoothingEnabled = false;	
+		ctx.msImageSmoothingEnabled = false;
+		ctx.imageSmoothingEnabled = false;
+
+		canvas.style.width = '' + CANVAS_WIDTH + 'px';
+		canvas.style.height = '' + CANVAS_HEIGHT + 'px';
+		}
+		resizeCanvas();
+
+		window.addEventListener('resize',function(){
+		resizeCanvas();
+		});
 
 
 		var frameCount = 0;
-
 		var score = 0;
-
 		var paused = false;
+		var highscore = 0
 
+		//Creating game image objects
 		var Img = {};
 		Img.player = new Image();
 		Img.player.src = "./img/game/player.png";
@@ -192,231 +260,207 @@
 		Img.upgrade1.src = './img/game/upgrade1.png';
 		Img.upgrade2 = new Image();
 		Img.upgrade2.src = './img/game/upgrade2.png';
-		Img.map = new Image();
-		Img.map.src = './img/game/map.png';
 
+		// Function for collision with objects in map
+		testCollisionRectRect = function(rect1,rect2){
+			return rect1.x <= rect2.x+rect2.width
+				&& rect2.x <= rect1.x+rect1.width
+				&& rect1.y <= rect2.y + rect2.height
+				&& rect2.y <= rect1.y + rect1.height;
+		}
 
-		var Player = function (initPack) {
-			var self = {};
-			self.id = initPack.id;
-			self.number = initPack.number;
-			self.x = initPack.x;
-			self.y = initPack.y;
-			self.hp = initPack.hp;
-			self.hpMax = initPack.hpMax;
-			self.score = initPack.score;
-			self.map = initPack.map;
+		// When user clicks the left mouse button
+		document.onmousedown = function(mouse){
+			if(mouse.which === 1)
+				player.pressingMouseLeft = true;
+			else
+				player.pressingMouseRight = true;
+		}
 
-			self.draw = function () {
-				if (Player.list[selfId].map !== self.map)
-					return;
-				var x = self.x - Player.list[selfId].x + WIDTH / 2;
-				var y = self.y - Player.list[selfId].y + HEIGHT / 2;
+		// When user releases the left mouse button
+		document.onmouseup = function(mouse){
+			if(mouse.which === 1)
+				player.pressingMouseLeft = false;
+			else
+				player.pressingMouseRight = false;
+		}
 
-				var hpWidth = 30 * self.hp / self.hpMax;
-				ctx.fillStyle = 'red';
-				ctx.fillRect(x - hpWidth / 2, y - 40, hpWidth, 4);
+		document.oncontextmenu = function(mouse){
+			mouse.preventDefault();
+		}
 
-				var width = Img.player.width * 2;
-				var height = Img.player.height * 2;
+		//When mouse moves around the map,
+		document.onmousemove = function(mouse){
+			var mouseX = mouse.clientX - canvas.getBoundingClientRect().left;
+			var mouseY = mouse.clientY - canvas.getBoundingClientRect().top;
 
+			mouseX -= CANVAS_WIDTH/2;
+			mouseY -= CANVAS_HEIGHT/2;
 
-				ctx.drawImage(Img.player,
-					0, 0, Img.player.width, Img.player.height,
-					x - width / 2, y - height / 2, width, height);
+			player.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180;
+		}
 
-				//ctx.fillText(self.score,self.x,self.y-60);
+		// ------- keys for movements -------
+		var playerMovement = {
+			up: false,
+			down: false,
+			left: false,
+			right: false
+		}
+
+		// when key is pressed
+		document.addEventListener('keydown', function (event) {
+			switch (event.keyCode) {
+				case 65: // A
+				player.pressingLeft = true;
+					break;
+				case 87: // W
+				player.pressingUp = true;
+					break;
+				case 68: // D
+				player.pressingRight = true;
+					break;
+				case 83: // S
+				player.pressingDown = true;
+					break;
+				case 80: // p
+				paused = !paused;
+					break;
+			}
+		});
+
+		// when key is not pressed
+		document.addEventListener('keyup', function (event) {
+			switch (event.keyCode) {
+				case 65: // A
+				player.pressingLeft = false;
+					break;
+				case 87: // W
+				player.pressingUp = false;
+					break;
+				case 68: // D
+				player.pressingRight = false;
+					break;
+				case 83: // S
+				player.pressingDown = false;
+					break;
+			}
+		});
+
+        // Update function which resets every object required for game.
+		update = function(){
+
+			if(paused){
+				ctx.fillText('Paused',WIDTH/2.5,HEIGHT/2.5);
+				return;
 			}
 
-			Player.list[self.id] = self;
+			ctx.clearRect(0,0,WIDTH,HEIGHT);
+			Maps.current.draw();
+			frameCount++;
+			score++;
 
 
+			Bullet.update();
+			Upgrade.update();
+			Enemy.update();
+			
+
+			player.update(score);
+			ctx.fillStyle = "#ff0000"
+
+			ctx.fillText(player.hp + " Hp",0,30);
+			ctx.fillText('Score: ' + score,200,30);
+			ctx.fillText('HighScore: '+ highscore , 460,30)
+		}
+
+		// Function to change object values at start of game
+		startNewGame = function(){
+			player.hp = 10;
+			timeWhenGameStarted = Date.now();
+			frameCount = 0;
+			player.score = 0
+			score = 0;
+			Enemy.list = {};
+			Upgrade.list = {};
+			Bullet.list = {};
+			Enemy.randomlyGenerate();
+			Enemy.randomlyGenerate();
+			Enemy.randomlyGenerate();
+
+		}
+
+		// Creating map 
+		Maps = function(id,imgSrc,grid){
+			var self = {
+				id:id,
+				image:new Image(),
+				width:grid[0].length * TILE_SIZE,
+				height:grid.length * TILE_SIZE,
+				grid:grid,
+			}
+			self.image.src = imgSrc;
+
+			self.isPositionWall = function(pt){
+				var gridX = Math.floor(pt.x / TILE_SIZE);
+				var gridY = Math.floor(pt.y / TILE_SIZE);
+				if(gridX < 0 || gridX >= self.grid[0].length)
+					return true;
+				if(gridY < 0 || gridY >= self.grid.length)
+					return true;
+				return self.grid[gridY][gridX];
+			}
+
+			self.draw = function(){
+				var x = WIDTH/2 - player.x;
+				var y = HEIGHT/2 - player.y;
+				img = new Image();
+			img.src = './img/game/random.png';
+			
+				var ptrn = ctx.createPattern(img, 'repeat');
+				
+
+				ctx.fillStyle = ptrn;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width*2,self.image.height*2);
+
+			}
 			return self;
 		}
-		Player.list = {};
 
+		var array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 502, 502, 502, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 502, 502, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-		var Bullet = function (initPack) {
-			var self = {};
-			self.id = initPack.id;
-			self.x = initPack.x;
-			self.y = initPack.y;
-			self.map = initPack.map;
-
-			self.draw = function () {
-				if (Player.list[selfId].map !== self.map)
-					return;
-				var width = Img.bullet.width / 2;
-				var height = Img.bullet.height / 2;
-
-				var x = self.x - Player.list[selfId].x + WIDTH / 2;
-				var y = self.y - Player.list[selfId].y + HEIGHT / 2;
-
-				ctx.drawImage(Img.bullet,
-					0, 0, Img.bullet.width, Img.bullet.height,
-					x - width / 2, y - height / 2, width, height);
+		var array2D = [];
+		for(var i = 0 ; i < 40; i++){
+			array2D[i] = [];
+			for(var j = 0 ; j < 40; j++){
+				array2D[i][j] = array[i * 40 + j];
 			}
-
-			Bullet.list[self.id] = self;
-			return self;
-		}
-		Bullet.list = {};
-
-		var selfId = null;
-
-		socket.on('init', function (data) {
-			if (data.selfId)
-				selfId = data.selfId;
-			//{ player : [{id:123,number:'1',x:0,y:0},{id:1,number:'2',x:0,y:0}], bullet: []}
-			for (var i = 0; i < data.player.length; i++) {
-				new Player(data.player[i]);
-			}
-			for (var i = 0; i < data.bullet.length; i++) {
-				new Bullet(data.bullet[i]);
-			}
-		});
-
-		socket.on('update', function (data) {
-			//{ player : [{id:123,x:0,y:0},{id:1,x:0,y:0}], bullet: []}
-			for (var i = 0; i < data.player.length; i++) {
-				var pack = data.player[i];
-				var p = Player.list[pack.id];
-				if (p) {
-					if (pack.x !== undefined)
-						p.x = pack.x;
-					if (pack.y !== undefined)
-						p.y = pack.y;
-					if (pack.hp !== undefined)
-						p.hp = pack.hp;
-					if (pack.score !== undefined)
-						p.score = pack.score;
-					if (pack.map !== undefined)
-						p.map = pack.map;
-				}
-			}
-			for (var i = 0; i < data.bullet.length; i++) {
-				var pack = data.bullet[i];
-				var b = Bullet.list[data.bullet[i].id];
-				if (b) {
-					if (pack.x !== undefined)
-						b.x = pack.x;
-					if (pack.y !== undefined)
-						b.y = pack.y;
-				}
-			}
-		});
-
-		socket.on('remove', function (data) {
-			//{player:[12323],bullet:[12323,123123]}
-			for (var i = 0; i < data.player.length; i++) {
-				delete Player.list[data.player[i]];
-			}
-			for (var i = 0; i < data.bullet.length; i++) {
-				delete Bullet.list[data.bullet[i]];
-			}
-		});
-
-		setInterval(function () {
-			if (!selfId)
-				return;
-			ctx.clearRect(0, 0, 500, 500);
-			drawMap();
-			drawScore();
-			for (var i in Player.list)
-				Player.list[i].draw();
-			for (var i in Bullet.list)
-				Bullet.list[i].draw();
-		}, 40);
-
-		var drawMap = function () {
-			var player = Player.list[selfId];
-			var x = WIDTH / 2 - player.x;
-			var y = HEIGHT / 2 - player.y;
-			console.log("hello")
-			ctx.drawImage(Img.map, x, y);
 		}
 
-		var drawScore = function () {
-			if (lastScore === Player.list[selfId].score)
-				return;
-			lastScore = Player.list[selfId].score;
-			ctxUi.clearRect(0, 0, 500, 500);
-			ctxUi.fillStyle = 'white';
-			ctxUi.fillText(Player.list[selfId].score, 0, 30);
-		}
-		var lastScore = null;
+		Maps.current = Maps('field','../img/game/map.png',array2D);
 
-		document.onkeydown = function (event) {
-			if (event.keyCode === 68) //d
-				socket.emit('keyPress', {
-					inputId: 'right',
-					state: true
-				});
-			else if (event.keyCode === 83) //s
-				socket.emit('keyPress', {
-					inputId: 'down',
-					state: true
-				});
-			else if (event.keyCode === 65) //a
-				socket.emit('keyPress', {
-					inputId: 'left',
-					state: true
-				});
-			else if (event.keyCode === 87) // w
-				socket.emit('keyPress', {
-					inputId: 'up',
-					state: true
-				});
 
-		}
-		document.onkeyup = function (event) {
-			if (event.keyCode === 68) //d
-				socket.emit('keyPress', {
-					inputId: 'right',
-					state: false
-				});
-			else if (event.keyCode === 83) //s
-				socket.emit('keyPress', {
-					inputId: 'down',
-					state: false
-				});
-			else if (event.keyCode === 65) //a
-				socket.emit('keyPress', {
-					inputId: 'left',
-					state: false
-				});
-			else if (event.keyCode === 87) // w
-				socket.emit('keyPress', {
-					inputId: 'up',
-					state: false
-				});
+        // Creating player object and calling the startNewGame object.
+		player = Player(socket);
+		startNewGame();
+		updateScore = function() {
+			socket.on('message', function(msg){
+				console.log("score:" + msg)
+				highscore = msg
+				ctx.fillText('HighScore: '+ highscore , 350,30)
+			})
+			
 		}
 
-		document.onmousedown = function (event) {
-			socket.emit('keyPress', {
-				inputId: 'attack',
-				state: true
-			});
-		}
-		document.onmouseup = function (event) {
-			socket.emit('keyPress', {
-				inputId: 'attack',
-				state: false
-			});
-		}
-		document.onmousemove = function (event) {
-			var x = -250 + event.clientX - 8;
-			var y = -250 + event.clientY - 8;
-			var angle = Math.atan2(y, x) / Math.PI * 180;
-			socket.emit('keyPress', {
-				inputId: 'mouseAngle',
-				state: angle
-			});
-		}
+		//Executes specifed object at set intervals
+		setInterval(update,40);
+		setInterval(updateScore, 1600)
+		setInterval(() => {
+			socket.emit('movement', playerMovement);
+		}, 1000 / 60);
 
-		document.oncontextmenu = function (event) {
-			event.preventDefault();
-		}
+
 	</script>
 
 </body>

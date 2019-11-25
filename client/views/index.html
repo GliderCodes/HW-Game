@@ -73,7 +73,7 @@ $(document).ready(function () {
 				<div class="row">
 					<div class="col-lg-6 pr-0">
 						<span id="user.name" style="display: none">{{name}}</span>
-						<h2>Pixel Wars</h2>
+						<h2>Pixel Art</h2>
 						<p>An adventure game where you fight each other to until you get the throne, completely
 							unfinished but hey!</p>
 					</div>
@@ -86,10 +86,14 @@ $(document).ready(function () {
 
 	<!-- Canvas section start -->
 	<div id="canvas-wrap">
+		
 		<canvas id="canvas"  style="border:1px solid #000000; background-image:url(../img/game/random.png); width:200px; height:200"></canvas>
 		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
 		<div id="overlay"></div>
+		
 	</div>
+
+
 	<script src="js/client.js"></script>
 	
 	<!-- Canvas section end -->
@@ -199,6 +203,7 @@ $(document).ready(function () {
 		var socket = io();
 		var canvas = document.getElementById("canvas");
 		var ctx = canvas.getContext("2d");
+	
 
 		var TILE_SIZE = 32;
 		var WIDTH = 640;
@@ -239,6 +244,7 @@ $(document).ready(function () {
 		var frameCount = 0;
 		var score = 0;
 		var paused = false;
+		var highscore = 0
 
 		//Creating game image objects
 		var Img = {};
@@ -359,10 +365,12 @@ $(document).ready(function () {
 			Upgrade.update();
 			Enemy.update();
 
-			player.update();
+			player.update(score);
+			ctx.fillStyle = "#ff0000"
 
 			ctx.fillText(player.hp + " Hp",0,30);
 			ctx.fillText('Score: ' + score,200,30);
+			ctx.fillText('HighScore: '+ highscore , 460,30)
 		}
 
 		// Function to change object values at start of game
@@ -370,6 +378,7 @@ $(document).ready(function () {
 			player.hp = 10;
 			timeWhenGameStarted = Date.now();
 			frameCount = 0;
+			player.score = 0
 			score = 0;
 			Enemy.list = {};
 			Upgrade.list = {};
@@ -404,6 +413,14 @@ $(document).ready(function () {
 			self.draw = function(){
 				var x = WIDTH/2 - player.x;
 				var y = HEIGHT/2 - player.y;
+				img = new Image();
+			img.src = './img/game/random.png';
+			
+				var ptrn = ctx.createPattern(img, 'repeat');
+				
+
+				ctx.fillStyle = ptrn;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width*2,self.image.height*2);
 
 			}
@@ -424,11 +441,20 @@ $(document).ready(function () {
 
 
         // Creating player object and calling the startNewGame object.
-		player = Player();
+		player = Player(socket);
 		startNewGame();
+		updateScore = function() {
+			socket.on('message', function(msg){
+				console.log("score:" + msg)
+				highscore = msg
+				ctx.fillText('HighScore: '+ highscore , 350,30)
+			})
+			
+		}
 
 		//Executes specifed object at set intervals
 		setInterval(update,40);
+		setInterval(updateScore, 1600)
 		setInterval(() => {
 			socket.emit('movement', playerMovement);
 		}, 1000 / 60);

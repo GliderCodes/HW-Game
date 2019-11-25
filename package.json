@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/GliderCodes/HW-Game#readme",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "connect-redis": "^4.0.3",
     "consolidate": "^0.15.1",

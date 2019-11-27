@@ -85,7 +85,7 @@ app.use((err, req, res, next) => {
 
 // server events and listening
 server.on("error", (err) => {
-    console.log('Server Error: ' + err);//if error occur during the game it will print "Server error " and the type of the error
+    console.log('Server Error: ' + err);
 });
 
 // listening to the port
@@ -107,7 +107,7 @@ io.on('connection', function (socket) {
     var playerdb = socket.request.session.user
     // console.log(players)
     if (playerdb)
-    valueExists(players, playerdb.username, function(key, exists) {// this function will check whether the user name and password are present in the data base or not
+    valueExists(players, playerdb.username, function(key, exists) {
         if (exists) {
             // console.log(players[key])
             delete players[key] 
@@ -127,11 +127,11 @@ io.on('connection', function (socket) {
             };
         }
     })
-    console.log(players) 
+    console.log(players)
 
     // Socket listener for when players disconnect
     socket.on('disconnect', function () {
-        console.log("Disconnected")
+        // console.log("Disconnected")
         if (players[socket.id] && players[socket.id].x != undefined && players[socket.id].y != undefined) {
             Player.findOneAndUpdate({_id: playerdb._id}, {x:players[socket.id].x, y:players[socket.id].y})
         }
@@ -142,31 +142,35 @@ io.on('connection', function (socket) {
     socket.on('movement', function (data) {
         var player = players[socket.id];
         if (data.left) {
-            player.x -= 5;//if the player moves left reduce the value by 5
+            player.x -= 5;
         }
         if (data.up) {
-            player.y -= 5;//if the player moves up  reduce the value by 5
+            player.y -= 5;
         }
         if (data.right) {
-            player.x += 5;//if the player moves right  increase the value by 5
+            player.x += 5;
         }
         if (data.down) {
-            player.y += 5;//if  the player moves down increase the value by 5
+            player.y += 5;
         }
     });
     socket.on('storeOldScore', function(oldScore) {
-        console.log("Storing Score: "+oldScore)
+        // console.log("Storing Score: "+oldScore)
         if (players[socket])
             players[socket.id].score = oldScore
     })
-    socket.on('onDeath', function(param) {  
+    socket.on('onDeath', function(param) {
         // console.log(socket)
         // console.log(players[socket.id])
+        Player.find({}, null, {sort: {score: -1}}, function(err, result) {
+            if (!err)
+            socket.emit('leaderboardUpdate', result)
+        })
         if (players[socket.id] != undefined)
         var playerUsername = players[socket.id].username
         
         Player.findOne({username:playerUsername}, function(err, player) {
-            if (player.score < param) {
+            if (player && player.score < param) {
                 socket.send(param)
                 Player.findOneAndUpdate({username: playerUsername}, {score: param}, (err) => {
                     console.log(err)

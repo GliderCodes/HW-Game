@@ -90,11 +90,6 @@ $(document).ready(function () {
 		<canvas id="canvas"  style="border:1px solid #000000; background-image:url(../img/game/random.png); width:200px; height:200"></canvas>
 		<!-- <canvas id="ctx-ui" width="800" height="600"></canvas> -->
 		<div id="overlay"></div>
-
-		<div class='leaderboard'>
-			<h1><span>Leader Board</span></h1>
-			<div class="content"></div>
-		</div>
 		
 	</div>
 
@@ -118,14 +113,34 @@ $(document).ready(function () {
 <br>
 <br>
 <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+
+
+<h1>Leaderboard</h1>
+<div class="container" id="container">
+	<div class="prow">
+	  <div class="pname"></div><div class="pscore"></div>
+	</div>
+  
+	<div class="prow">
+	  <div class="pname"></div><div class="pscore"></div>
+	</div>
+
+	<div class="prow">
+		<div class="pname"></div><div class="pscore"></div>
+	  </div>
+  
+  </div>
+
+
+
 	<!-- Features section -->
 	<section class="features-section spad">
 		<div class="container">
@@ -216,6 +231,7 @@ $(document).ready(function () {
 		var CANVAS_WIDTH = 640;
 		var CANVAS_HEIGHT = 260;
 		var timeWhenGameStarted = Date.now();	//return time in milliseconds
+
 
 
 		// Resizing canvas for game use
@@ -391,6 +407,20 @@ $(document).ready(function () {
 			Enemy.randomlyGenerate();
 			Enemy.randomlyGenerate();
 			Enemy.randomlyGenerate();
+			socket.on('leaderboardUpdate', function(result) {
+				console.log(result[0])
+				
+				var container = document.getElementById("container");
+				container.innerHTML = ""
+				container.innerHTML += `<div class=\"prow\"\>
+	  <div class=\"pname\"\>&nbsp;&nbsp;${result[0].username}</div><div class=\"pscore\">${result[0].score}</div\>
+	\</div\>\n<div class=\"prow\"\>
+	  <div class=\"pname\"\>&nbsp;&nbsp;${result[1].username}</div><div class=\"pscore\">${result[1].score}</div\>
+	\</div\>\n<div class=\"prow\"\>
+	  <div class=\"pname\"\>&nbsp;&nbsp;${result[2].username}</div><div class=\"pscore\">${result[2].score}</div\>
+	\</div\>`
+
+			})
 
 		}
 

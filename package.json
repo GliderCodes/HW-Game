@@ -1,10 +1,10 @@
 {
-  "name": "project",
+  "name": "HW-Game",
   "version": "1.0.0",
   "description": "A game project for heriot watt",
-  "main": "server/app.js",
+  "main": "node server/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node server/app.js"
   },
   "repository": {
     "type": "git",

@@ -2,9 +2,9 @@
   "name": "HW-Game",
   "version": "1.0.0",
   "description": "A game project for heriot watt",
-  "main": "node server/app.js",
+  "main": "server/app.js",
   "scripts": {
-    "test": "node server/app.js"
+    "test": "server/app.js"
   },
   "repository": {
     "type": "git",

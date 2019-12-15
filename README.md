@@ -1,6 +1,6 @@
 # Klasa
 
-[![npm](https://camo.githubusercontent.com/1ac97a76371a5a57af29357a7ab93ae050137add/687474703a2f2f7777772e616d742e696e2f696d672f73657276696365732f657870726573732e706e67)](https://www.npmjs.com/package/express)
+[![npm]()](https://www.npmjs.com/package/express)
 [![npm](https://img.shields.io/npm/dt/klasa.svg?maxAge=3600)](https://www.npmjs.com/package/klasa)
 [![Build Status](https://dev.azure.com/dirigeants/klasa/_apis/build/status/dirigeants.klasa?branchName=master)](https://dev.azure.com/dirigeants/klasa/_build/latest?definitionId=1&branchName=master)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/dirigeants/klasa.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/dirigeants/klasa/alerts/)
